@@ -93,14 +93,18 @@ fun PairingScreen(
                             usersRef.child(newCode).addValueEventListener(object : com.google.firebase.database.ValueEventListener {
                                 override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
                                     val status = snapshot.getValue(String::class.java)
+                                    android.util.Log.d("PairingScreen", "Firebase status changed: $status")
+                                    android.widget.Toast.makeText(context, "상태: $status", android.widget.Toast.LENGTH_SHORT).show()
+                                    
                                     if (status == "connected") {
                                         statusMessage = "자녀와 연결되었습니다! 화면 공유를 시작합니다."
+                                        android.util.Log.d("PairingScreen", "Calling onStartShare()")
                                         onStartShare()
-                                        // Auto-dismiss the screen to return to Home (Overlay will appear)
-                                        onBack()
                                     }
                                 }
-                                override fun onCancelled(error: com.google.firebase.database.DatabaseError) {}
+                                override fun onCancelled(error: com.google.firebase.database.DatabaseError) {
+                                    android.util.Log.e("PairingScreen", "Firebase error: ${error.message}")
+                                }
                             })
                         }
                         .addOnFailureListener { statusMessage = "생성 실패: ${it.message}" }

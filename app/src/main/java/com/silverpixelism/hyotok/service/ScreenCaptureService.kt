@@ -62,8 +62,15 @@ class ScreenCaptureService : Service() {
                          candidate?.let { signalingClient.sendIceCandidate(it) }
                      }
                      override fun onIceConnectionChange(newState: org.webrtc.PeerConnection.IceConnectionState?) {
-                        if (newState == org.webrtc.PeerConnection.IceConnectionState.FAILED) {
-                            updateNotification("Connection Failed", "ICE Connection Failed")
+                        android.util.Log.d("ScreenCaptureService", "ICE Connection state: $newState")
+                        when (newState) {
+                            org.webrtc.PeerConnection.IceConnectionState.DISCONNECTED,
+                            org.webrtc.PeerConnection.IceConnectionState.FAILED,
+                            org.webrtc.PeerConnection.IceConnectionState.CLOSED -> {
+                                android.util.Log.d("ScreenCaptureService", "Connection lost, stopping service")
+                                stopSelf()
+                            }
+                            else -> {}
                         }
                      }
                      override fun onDataChannel(p0: org.webrtc.DataChannel?) {}
@@ -77,7 +84,14 @@ class ScreenCaptureService : Service() {
                      override fun onIceCandidatesRemoved(p0: Array<out org.webrtc.IceCandidate>?) {}
                 })
                 
-                // 3. Setup Signaling Callbacks
+                // 3. Setup touch data callback via DataChannel (P2P, low latency)
+                webRTCClient.onTouchReceived = { x, y ->
+                    android.util.Log.d("ScreenCaptureService", "Touch received via DataChannel: ($x, $y)")
+                    // Dispatch to RemoteControlService for actual touch
+                    RemoteControlService.instance?.performTapNormalized(x, y)
+                }
+                
+                // 4. Setup Signaling Callbacks
                 signalingClient.onAnswerReceived = { answerSdp ->
                     webRTCClient.onRemoteAnswer(answerSdp)
                 }
@@ -85,7 +99,7 @@ class ScreenCaptureService : Service() {
                     webRTCClient.addIceCandidate(candidate)
                 }
                 
-                // NEW: Handle disconnect signal from Guardian app
+                // Handle disconnect signal from Guardian app
                 signalingClient.onDisconnectReceived = {
                     android.util.Log.d("ScreenCaptureService", "Disconnect signal received, stopping service")
                     stopSelf()
@@ -94,7 +108,7 @@ class ScreenCaptureService : Service() {
                 // Start Listening Now
                 signalingClient.startListening()
                 
-                // 4. Send Offer
+                // 5. Send Offer
                 webRTCClient.sendOffer()
             }
         }

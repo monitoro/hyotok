@@ -69,11 +69,22 @@ fun GuardianHomeScreen() {
         
              Button(
                  onClick = {
-                     // Connect Logic
-                     val signaling = com.silverpixelism.hyotok.webrtc.SignalingClient(pairingCode)
-                     // Initialize WebRTC
-                     // Ideally start an Activity or switch composable to "VideoScreen"
-                     isConnected = true 
+                     if (pairingCode.isNotEmpty()) {
+                         // Update Firebase to notify Parent app
+                         val database = com.google.firebase.database.FirebaseDatabase.getInstance()
+                         database.getReference("users").child(pairingCode).setValue("connected")
+                             .addOnSuccessListener {
+                                 android.util.Log.d("Guardian", "Firebase updated to connected")
+                                 android.widget.Toast.makeText(context, "연결 성공!", android.widget.Toast.LENGTH_SHORT).show()
+                                 isConnected = true
+                             }
+                             .addOnFailureListener { e ->
+                                 android.util.Log.e("Guardian", "Firebase update failed: ${e.message}")
+                                 android.widget.Toast.makeText(context, "연결 실패: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+                             }
+                     } else {
+                         android.widget.Toast.makeText(context, "코드를 입력하세요", android.widget.Toast.LENGTH_SHORT).show()
+                     }
                  },
                  modifier = Modifier.padding(top = 24.dp).fillMaxWidth()
              ) {
@@ -166,7 +177,7 @@ fun GuardianVideoScreen(pairingCode: String, onDisconnect: () -> Unit) {
                         setEnableHardwareScaler(true)
                         setZOrderMediaOverlay(false) // Ensure video doesn't cover UI
                         
-                        // Touch control - send touch coordinates to parent phone
+                        // Touch control - send touch coordinates to parent phone via DataChannel
                         setOnTouchListener { v, event ->
                             when (event.action) {
                                 android.view.MotionEvent.ACTION_DOWN,
@@ -174,7 +185,8 @@ fun GuardianVideoScreen(pairingCode: String, onDisconnect: () -> Unit) {
                                     // Normalize coordinates to 0.0 ~ 1.0
                                     val normalizedX = event.x / v.width
                                     val normalizedY = event.y / v.height
-                                    signalingClient.sendTouch(normalizedX, normalizedY)
+                                    // Use DataChannel for low latency P2P transmission
+                                    webRTCClient.sendTouchData(normalizedX, normalizedY)
                                     true
                                 }
                                 else -> false
@@ -198,7 +210,10 @@ fun GuardianVideoScreen(pairingCode: String, onDisconnect: () -> Unit) {
                                      connectionStatus = "연결 끊김"
                                  }
                              }
-                             override fun onDataChannel(p0: org.webrtc.DataChannel?) {}
+                             override fun onDataChannel(channel: org.webrtc.DataChannel?) {
+                                 // Setup received DataChannel from Parent app
+                                 channel?.let { webRTCClient.setupReceivedDataChannel(it) }
+                             }
                              override fun onIceConnectionReceivingChange(p0: Boolean) {}
                              override fun onIceGatheringChange(p0: org.webrtc.PeerConnection.IceGatheringState?) {}
                              override fun onRemoveStream(p0: org.webrtc.MediaStream?) {

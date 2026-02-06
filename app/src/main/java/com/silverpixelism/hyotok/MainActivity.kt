@@ -41,12 +41,17 @@ class MainActivity : ComponentActivity() {
     private val mediaProjectionManager by lazy {
         getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
     }
+    
+    // State to trigger navigation after permission is granted
+    private val _shouldNavigateToHome = mutableStateOf(false)
 
     private val startMediaProjection = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             startScreenCaptureService(result.resultCode, result.data!!)
+            // Signal Compose UI to navigate back after permission granted
+            _shouldNavigateToHome.value = true
         }
     }
 
@@ -109,6 +114,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     val navController = rememberNavController()
+                    
+                    // Auto-navigate to home when screen share permission is granted
+                    val shouldNavigateHome by remember { _shouldNavigateToHome }
+                    androidx.compose.runtime.LaunchedEffect(shouldNavigateHome) {
+                        if (shouldNavigateHome) {
+                            navController.popBackStack("home", inclusive = false)
+                            _shouldNavigateToHome.value = false
+                        }
+                    }
+                    
                     NavHost(navController = navController, startDestination = "home") {
                         composable("home") {
                             HomeScreen(
@@ -147,14 +162,21 @@ class MainActivity : ComponentActivity() {
                                     prefs.savePairingCode(code)
                                 },
                                 onStartShare = {
-                                    if (androidx.core.content.ContextCompat.checkSelfPermission(
-                                            this@MainActivity,
-                                            android.Manifest.permission.RECORD_AUDIO
-                                        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-                                    ) {
-                                        startMediaProjection.launch(mediaProjectionManager.createScreenCaptureIntent())
-                                    } else {
-                                        requestAudioPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
+                                    android.util.Log.d("MainActivity", "onStartShare called!")
+                                    android.widget.Toast.makeText(this@MainActivity, "화면 공유 시작 요청", android.widget.Toast.LENGTH_SHORT).show()
+                                    
+                                    runOnUiThread {
+                                        if (androidx.core.content.ContextCompat.checkSelfPermission(
+                                                this@MainActivity,
+                                                android.Manifest.permission.RECORD_AUDIO
+                                            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                                        ) {
+                                            android.util.Log.d("MainActivity", "Launching MediaProjection")
+                                            startMediaProjection.launch(mediaProjectionManager.createScreenCaptureIntent())
+                                        } else {
+                                            android.util.Log.d("MainActivity", "Requesting Audio Permission")
+                                            requestAudioPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
+                                        }
                                     }
                                 },
                                 onChildConnected = { code ->
