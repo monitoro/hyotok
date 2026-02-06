@@ -1,0 +1,79 @@
+[개발 계획서] 시니어 원격 가이드 앱 '효톡(Hyo-Talk)'
+1. 개발 환경 및 기술 스택
+언어: Kotlin (코틀린)
+
+IDE: Android Studio Ladybug 이상
+
+최소 지원 버전: Android 10 (API Level 29) 이상
+
+핵심 라이브러리:
+
+통신(WebRTC): Google WebRTC 또는 Agora SDK (실시간 화면 공유 및 음성)
+
+푸시/DB: Firebase (FCM, Realtime Database) - 자녀의 클릭 좌표 전송용
+
+UI: Jetpack Compose (최신 선언형 UI로 대왕 버튼 및 고대비 테마 구현)
+
+권한 관리: Accessibility Service (다른 앱 위 드로잉), MediaProjection (화면 캡처)
+
+2. 앱 아키텍처 (Architecture)
+효톡은 부모님 기기에서 화면 데이터를 송신하고, 자녀 기기에서 좌표 데이터를 수신하는 양방향 통신 구조를 가집니다.
+
+3. 기능별 상세 개발 계획
+단계 1: 프로젝트 기초 및 런처 모드 (1~2주)
+기본 런처 설정: 홈 버튼을 눌렀을 때 '효톡'이 뜨도록 CATEGORY_HOME 필터 설정.
+
+대왕 UI 구현: Jetpack Compose를 이용해 텍스트와 아이콘 크기를 고정한 메인 그리드 레이아웃 개발.
+
+자녀-부모 페어링: QR 코드나 초대 코드를 통해 Firebase 상에서 두 기기를 매칭.
+
+단계 2: 원격 가이드 엔진 (WebRTC) (3~4주)
+화면 캡처: MediaProjection API를 통해 현재 화면을 비디오 스트림으로 변환.
+
+실시간 전송: WebRTC를 통해 자녀 앱으로 화면 스트림 전송.
+
+데이터 채널(Data Channel): 자녀가 화면을 터치한 X, Y 좌표값을 실시간으로 부모님 기기에 전송.
+
+단계 3: 오버레이 드로잉 가이드 (5~6주)
+플로팅 뷰(Floating View): WindowManager를 사용하여 다른 앱(카톡 등) 실행 중에도 그 위에 가이드를 그릴 수 있는 투명 레이어 구현.
+
+애니메이션 포인터: 자녀가 보낸 좌표에 '반짝이는 원'이나 '화살표'가 나타나도록 구현.
+
+음성 오디오: 화면 공유 중 양방향 음성 통화(VoIP) 활성화.
+
+단계 4: 안심 기능 및 AI 연동 (7~8주)
+상태 모니터링: WorkManager를 활용해 배터리 상태, 활동 여부를 주기적으로 Firebase에 업데이트.
+
+AI 비서 연동: Gemini API를 활용해 음성 명령("오늘 날씨 어때?", "카톡 읽어줘") 처리부 개발.
+
+알림 읽어주기: NotificationListenerService를 통해 수신된 메시지를 음성(TTS)으로 변환.
+
+4. 핵심 코드 포인트 (Kotlin 예시)
+[부모님 기기에서 자녀의 클릭 좌표를 화면에 그리는 로직 초안]
+
+Kotlin
+
+// WindowManager를 이용한 오버레이 뷰 생성 (단순화된 예시)
+val params = WindowManager.LayoutParams(
+    WindowManager.LayoutParams.MATCH_PARENT,
+    WindowManager.LayoutParams.MATCH_PARENT,
+    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, // 다른 앱 위에 그리기
+    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, // 터치는 아래 앱이 받도록 함
+    PixelFormat.TRANSLUCENT
+)
+
+// 자녀가 보낸 좌표(x, y)에 애니메이션 원을 그리는 커스텀 뷰 추가
+fun showGuidePointer(x: Float, y: Float) {
+    val pointerView = GuideCircleView(context)
+    pointerView.setPosition(x, y)
+    windowManager.addView(pointerView, params)
+}
+5. 출시 및 운영 전략
+클로즈 베타: 사용자님의 부모님이나 주변 지인을 대상으로 '원격 지원 성공률' 테스트.
+
+스토어 심사 대비: '접근성 권한' 사용 이유에 대한 데모 영상 미리 준비 (구글 심사 필수 제출 사항).
+
+마케팅: "명절 선물 대신 설치해 드리는 앱" 컨셉으로 소셜 미디어 홍보.
+
+6. 사용자님을 위한 맞춤 제언
+사용자님은 이미 Stable Diffusion과 LLM 활용 능력이 뛰어나시니, 훗날 4단계에서 '부모님 얼굴을 학습시킨 캐릭터가 설명해 주는 가이드 영상' 같은 기능을 추가하시면 경쟁 앱들이 절대 따라올 수 없는 강력한 팬덤을 만들 수 있을 것 같습니다.

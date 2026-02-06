@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HyoTalk</string>
+    <string name="gcm_defaultSenderId" translatable="false">10915657605</string>
+    <string name="google_api_key" translatable="false">AIzaSyAZLn1h7QwnNyAenW3qqySIfvzaT7Z33oA</string>
+    <string name="google_app_id" translatable="false">1:10915657605:android:496da92a7c4932e17f76ec</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyAZLn1h7QwnNyAenW3qqySIfvzaT7Z33oA</string>
+    <string name="google_storage_bucket" translatable="false">hyodophone.firebasestorage.app</string>
+    <string name="launcher_name">HyoTalk Launcher</string>
+    <string name="project_id" translatable="false">hyodophone</string>
+    <style name="Theme.HyoTalk" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

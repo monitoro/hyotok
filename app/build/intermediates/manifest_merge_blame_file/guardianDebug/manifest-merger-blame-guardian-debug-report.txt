@@ -1,0 +1,535 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.silverpixelism.hyotok.guardian"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:5:5-67
+11-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:5:22-64
+12    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- Overlay -->
+12-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:6:5-78
+12-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:6:22-75
+13    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+13-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:7:5-77
+13-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:7:22-74
+14    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+14-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:8:5-94
+14-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:8:22-91
+15    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+15-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:9:5-71
+15-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:9:22-68
+16    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+16-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:10:5-80
+16-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:10:22-77
+17    <uses-permission android:name="android.permission.WAKE_LOCK" />
+17-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:23:5-68
+17-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:23:22-65
+18    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+18-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:24:5-79
+18-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:24:22-76
+19    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+19-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:25:5-81
+19-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:25:22-78
+20    <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" />
+20-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:26:5-110
+20-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:26:22-107
+21    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+21-->[com.google.android.gms:play-services-measurement-api:21.5.0] /Users/mango/.gradle/caches/transforms-4/190dcf2f661dc886bae19d77f775cfa3/transformed/play-services-measurement-api-21.5.0/AndroidManifest.xml:25:5-79
+21-->[com.google.android.gms:play-services-measurement-api:21.5.0] /Users/mango/.gradle/caches/transforms-4/190dcf2f661dc886bae19d77f775cfa3/transformed/play-services-measurement-api-21.5.0/AndroidManifest.xml:25:22-76
+22    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_ATTRIBUTION" />
+22-->[com.google.android.gms:play-services-measurement-api:21.5.0] /Users/mango/.gradle/caches/transforms-4/190dcf2f661dc886bae19d77f775cfa3/transformed/play-services-measurement-api-21.5.0/AndroidManifest.xml:26:5-88
+22-->[com.google.android.gms:play-services-measurement-api:21.5.0] /Users/mango/.gradle/caches/transforms-4/190dcf2f661dc886bae19d77f775cfa3/transformed/play-services-measurement-api-21.5.0/AndroidManifest.xml:26:22-85
+23    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_AD_ID" />
+23-->[com.google.android.gms:play-services-measurement-api:21.5.0] /Users/mango/.gradle/caches/transforms-4/190dcf2f661dc886bae19d77f775cfa3/transformed/play-services-measurement-api-21.5.0/AndroidManifest.xml:27:5-82
+23-->[com.google.android.gms:play-services-measurement-api:21.5.0] /Users/mango/.gradle/caches/transforms-4/190dcf2f661dc886bae19d77f775cfa3/transformed/play-services-measurement-api-21.5.0/AndroidManifest.xml:27:22-79
+24
+25    <permission
+25-->[androidx.core:core:1.12.0] /Users/mango/.gradle/caches/transforms-4/f9cae082c188b9f68436f4963b05d856/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
+26        android:name="com.silverpixelism.hyotok.guardian.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+26-->[androidx.core:core:1.12.0] /Users/mango/.gradle/caches/transforms-4/f9cae082c188b9f68436f4963b05d856/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
+27        android:protectionLevel="signature" />
+27-->[androidx.core:core:1.12.0] /Users/mango/.gradle/caches/transforms-4/f9cae082c188b9f68436f4963b05d856/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+28
+29    <uses-permission android:name="com.silverpixelism.hyotok.guardian.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+29-->[androidx.core:core:1.12.0] /Users/mango/.gradle/caches/transforms-4/f9cae082c188b9f68436f4963b05d856/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
+29-->[androidx.core:core:1.12.0] /Users/mango/.gradle/caches/transforms-4/f9cae082c188b9f68436f4963b05d856/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
+30
+31    <application
+31-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:12:5-44:19
+32        android:allowBackup="true"
+32-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:13:9-35
+33        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+33-->[androidx.core:core:1.12.0] /Users/mango/.gradle/caches/transforms-4/f9cae082c188b9f68436f4963b05d856/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
+34        android:dataExtractionRules="@xml/data_extraction_rules"
+34-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:14:9-65
+35        android:debuggable="true"
+36        android:extractNativeLibs="false"
+37        android:fullBackupContent="@xml/backup_rules"
+37-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:15:9-54
+38        android:icon="@android:drawable/sym_def_app_icon"
+38-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:16:9-58
+39        android:label="@string/app_name"
+39-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:17:9-41
+40        android:roundIcon="@android:drawable/sym_def_app_icon"
+40-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:18:9-63
+41        android:supportsRtl="true"
+41-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:19:9-35
+42        android:theme="@style/Theme.HyoTalk" >
+42-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:20:9-45
+43        <activity
+43-->/Users/mango/00_Develop/hyotok/app/src/guardian/AndroidManifest.xml:6:9-14:20
+44            android:name="com.silverpixelism.hyotok.ui.GuardianHomeActivity"
+44-->/Users/mango/00_Develop/hyotok/app/src/guardian/AndroidManifest.xml:7:13-77
+45            android:exported="true"
+45-->/Users/mango/00_Develop/hyotok/app/src/guardian/AndroidManifest.xml:8:13-36
+46            android:theme="@style/Theme.HyoTalk" >
+46-->/Users/mango/00_Develop/hyotok/app/src/guardian/AndroidManifest.xml:9:13-49
+47            <intent-filter>
+47-->/Users/mango/00_Develop/hyotok/app/src/guardian/AndroidManifest.xml:10:13-13:29
+48                <action android:name="android.intent.action.MAIN" />
+48-->/Users/mango/00_Develop/hyotok/app/src/guardian/AndroidManifest.xml:11:17-69
+48-->/Users/mango/00_Develop/hyotok/app/src/guardian/AndroidManifest.xml:11:25-66
+49
+50                <category android:name="android.intent.category.LAUNCHER" />
+50-->/Users/mango/00_Develop/hyotok/app/src/guardian/AndroidManifest.xml:12:17-77
+50-->/Users/mango/00_Develop/hyotok/app/src/guardian/AndroidManifest.xml:12:27-74
+51            </intent-filter>
+52        </activity>
+53        <activity
+53-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:23:9-30:20
+54            android:name="com.silverpixelism.hyotok.MainActivity"
+54-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:24:13-41
+55            android:exported="true"
+55-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:25:13-36
+56            android:launchMode="singleTask"
+56-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:27:13-44
+57            android:theme="@style/Theme.HyoTalk" >
+57-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:26:13-49
+58
+59            <!-- Intent Filter removed for flavors -->
+60        </activity>
+61
+62        <service
+62-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:32:9-36:40
+63            android:name="com.silverpixelism.hyotok.service.ScreenCaptureService"
+63-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:33:13-57
+64            android:enabled="true"
+64-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:34:13-35
+65            android:exported="false"
+65-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:36:13-37
+66            android:foregroundServiceType="mediaProjection" />
+66-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:35:13-60
+67        <service
+67-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:38:9-41:40
+68            android:name="com.silverpixelism.hyotok.service.OverlayService"
+68-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:39:13-51
+69            android:enabled="true"
+69-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:40:13-35
+70            android:exported="false" />
+70-->/Users/mango/00_Develop/hyotok/app/src/main/AndroidManifest.xml:41:13-37
+71
+72        <provider
+72-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:29:9-37:20
+73            android:name="androidx.startup.InitializationProvider"
+73-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:30:13-67
+74            android:authorities="com.silverpixelism.hyotok.guardian.androidx-startup"
+74-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:31:13-68
+75            android:exported="false" >
+75-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:32:13-37
+76            <meta-data
+76-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:34:13-36:52
+77                android:name="androidx.work.WorkManagerInitializer"
+77-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:35:17-68
+78                android:value="androidx.startup" />
+78-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:36:17-49
+79            <meta-data
+79-->[androidx.emoji2:emoji2:1.4.0] /Users/mango/.gradle/caches/transforms-4/fc8eab82ee800b21ce5a25cbc7c5abc0/transformed/emoji2-1.4.0/AndroidManifest.xml:29:13-31:52
+80                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+80-->[androidx.emoji2:emoji2:1.4.0] /Users/mango/.gradle/caches/transforms-4/fc8eab82ee800b21ce5a25cbc7c5abc0/transformed/emoji2-1.4.0/AndroidManifest.xml:30:17-75
+81                android:value="androidx.startup" />
+81-->[androidx.emoji2:emoji2:1.4.0] /Users/mango/.gradle/caches/transforms-4/fc8eab82ee800b21ce5a25cbc7c5abc0/transformed/emoji2-1.4.0/AndroidManifest.xml:31:17-49
+82            <meta-data
+82-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/mango/.gradle/caches/transforms-4/aa75d2ffe80885a2823468272f5ba4ce/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:29:13-31:52
+83                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+83-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/mango/.gradle/caches/transforms-4/aa75d2ffe80885a2823468272f5ba4ce/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:30:17-78
+84                android:value="androidx.startup" />
+84-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/mango/.gradle/caches/transforms-4/aa75d2ffe80885a2823468272f5ba4ce/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:31:17-49
+85            <meta-data
+85-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
+86                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+86-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
+87                android:value="androidx.startup" />
+87-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
+88        </provider>
+89
+90        <service
+90-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:39:9-45:35
+91            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+91-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:40:13-88
+92            android:directBootAware="false"
+92-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:41:13-44
+93            android:enabled="@bool/enable_system_alarm_service_default"
+93-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:42:13-72
+94            android:exported="false" />
+94-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:43:13-37
+95        <service
+95-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:46:9-52:35
+96            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+96-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:47:13-84
+97            android:directBootAware="false"
+97-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:48:13-44
+98            android:enabled="@bool/enable_system_job_service_default"
+98-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:49:13-70
+99            android:exported="true"
+99-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:50:13-36
+100            android:permission="android.permission.BIND_JOB_SERVICE" />
+100-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:51:13-69
+101        <service
+101-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:53:9-59:35
+102            android:name="androidx.work.impl.foreground.SystemForegroundService"
+102-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:54:13-81
+103            android:directBootAware="false"
+103-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:55:13-44
+104            android:enabled="@bool/enable_system_foreground_service_default"
+104-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:56:13-77
+105            android:exported="false" />
+105-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:57:13-37
+106
+107        <receiver
+107-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:61:9-66:35
+108            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+108-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:62:13-88
+109            android:directBootAware="false"
+109-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:63:13-44
+110            android:enabled="true"
+110-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:64:13-35
+111            android:exported="false" />
+111-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:65:13-37
+112        <receiver
+112-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:67:9-77:20
+113            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy"
+113-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:68:13-106
+114            android:directBootAware="false"
+114-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:69:13-44
+115            android:enabled="false"
+115-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:70:13-36
+116            android:exported="false" >
+116-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:71:13-37
+117            <intent-filter>
+117-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:73:13-76:29
+118                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+118-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:74:17-87
+118-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:74:25-84
+119                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+119-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:75:17-90
+119-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:75:25-87
+120            </intent-filter>
+121        </receiver>
+122        <receiver
+122-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:78:9-88:20
+123            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
+123-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:79:13-104
+124            android:directBootAware="false"
+124-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:80:13-44
+125            android:enabled="false"
+125-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:81:13-36
+126            android:exported="false" >
+126-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:82:13-37
+127            <intent-filter>
+127-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:84:13-87:29
+128                <action android:name="android.intent.action.BATTERY_OKAY" />
+128-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:85:17-77
+128-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:85:25-74
+129                <action android:name="android.intent.action.BATTERY_LOW" />
+129-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:86:17-76
+129-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:86:25-73
+130            </intent-filter>
+131        </receiver>
+132        <receiver
+132-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:89:9-99:20
+133            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
+133-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:90:13-104
+134            android:directBootAware="false"
+134-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:91:13-44
+135            android:enabled="false"
+135-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:92:13-36
+136            android:exported="false" >
+136-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:93:13-37
+137            <intent-filter>
+137-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:95:13-98:29
+138                <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
+138-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:96:17-83
+138-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:96:25-80
+139                <action android:name="android.intent.action.DEVICE_STORAGE_OK" />
+139-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:97:17-82
+139-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:97:25-79
+140            </intent-filter>
+141        </receiver>
+142        <receiver
+142-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:100:9-109:20
+143            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
+143-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:101:13-103
+144            android:directBootAware="false"
+144-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:102:13-44
+145            android:enabled="false"
+145-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:103:13-36
+146            android:exported="false" >
+146-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:104:13-37
+147            <intent-filter>
+147-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:106:13-108:29
+148                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+148-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:107:17-79
+148-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:107:25-76
+149            </intent-filter>
+150        </receiver>
+151        <receiver
+151-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:110:9-121:20
+152            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+152-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:111:13-88
+153            android:directBootAware="false"
+153-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:112:13-44
+154            android:enabled="false"
+154-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:113:13-36
+155            android:exported="false" >
+155-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:114:13-37
+156            <intent-filter>
+156-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:116:13-120:29
+157                <action android:name="android.intent.action.BOOT_COMPLETED" />
+157-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:117:17-79
+157-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:117:25-76
+158                <action android:name="android.intent.action.TIME_SET" />
+158-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:118:17-73
+158-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:118:25-70
+159                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+159-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:119:17-81
+159-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:119:25-78
+160            </intent-filter>
+161        </receiver>
+162        <receiver
+162-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:122:9-131:20
+163            android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver"
+163-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:123:13-99
+164            android:directBootAware="false"
+164-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:124:13-44
+165            android:enabled="@bool/enable_system_alarm_service_default"
+165-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:125:13-72
+166            android:exported="false" >
+166-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:126:13-37
+167            <intent-filter>
+167-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:128:13-130:29
+168                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies" />
+168-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:129:17-98
+168-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:129:25-95
+169            </intent-filter>
+170        </receiver>
+171        <receiver
+171-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:132:9-142:20
+172            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+172-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:133:13-78
+173            android:directBootAware="false"
+173-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:134:13-44
+174            android:enabled="true"
+174-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:135:13-35
+175            android:exported="true"
+175-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:136:13-36
+176            android:permission="android.permission.DUMP" >
+176-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:137:13-57
+177            <intent-filter>
+177-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:139:13-141:29
+178                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+178-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:140:17-88
+178-->[androidx.work:work-runtime:2.9.0] /Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/AndroidManifest.xml:140:25-85
+179            </intent-filter>
+180        </receiver>
+181
+182        <service
+182-->[com.google.firebase:firebase-database:20.3.0] /Users/mango/.gradle/caches/transforms-4/9f3cfb12f0e0405d1c65cdd82bfe7556/transformed/firebase-database-20.3.0/AndroidManifest.xml:26:9-35:19
+183            android:name="com.google.firebase.components.ComponentDiscoveryService"
+183-->[com.google.firebase:firebase-database:20.3.0] /Users/mango/.gradle/caches/transforms-4/9f3cfb12f0e0405d1c65cdd82bfe7556/transformed/firebase-database-20.3.0/AndroidManifest.xml:27:13-84
+184            android:directBootAware="true"
+184-->[com.google.firebase:firebase-common:20.4.2] /Users/mango/.gradle/caches/transforms-4/feefce7f31fbb35791d56a6a410ab8a3/transformed/firebase-common-20.4.2/AndroidManifest.xml:32:13-43
+185            android:exported="false" >
+185-->[com.google.firebase:firebase-database:20.3.0] /Users/mango/.gradle/caches/transforms-4/9f3cfb12f0e0405d1c65cdd82bfe7556/transformed/firebase-database-20.3.0/AndroidManifest.xml:28:13-37
+186            <meta-data
+186-->[com.google.firebase:firebase-database:20.3.0] /Users/mango/.gradle/caches/transforms-4/9f3cfb12f0e0405d1c65cdd82bfe7556/transformed/firebase-database-20.3.0/AndroidManifest.xml:29:13-31:85
+187                android:name="com.google.firebase.components:com.google.firebase.database.FirebaseDatabaseKtxRegistrar"
+187-->[com.google.firebase:firebase-database:20.3.0] /Users/mango/.gradle/caches/transforms-4/9f3cfb12f0e0405d1c65cdd82bfe7556/transformed/firebase-database-20.3.0/AndroidManifest.xml:30:17-120
+188                android:value="com.google.firebase.components.ComponentRegistrar" />
+188-->[com.google.firebase:firebase-database:20.3.0] /Users/mango/.gradle/caches/transforms-4/9f3cfb12f0e0405d1c65cdd82bfe7556/transformed/firebase-database-20.3.0/AndroidManifest.xml:31:17-82
+189            <meta-data
+189-->[com.google.firebase:firebase-database:20.3.0] /Users/mango/.gradle/caches/transforms-4/9f3cfb12f0e0405d1c65cdd82bfe7556/transformed/firebase-database-20.3.0/AndroidManifest.xml:32:13-34:85
+190                android:name="com.google.firebase.components:com.google.firebase.database.DatabaseRegistrar"
+190-->[com.google.firebase:firebase-database:20.3.0] /Users/mango/.gradle/caches/transforms-4/9f3cfb12f0e0405d1c65cdd82bfe7556/transformed/firebase-database-20.3.0/AndroidManifest.xml:33:17-109
+191                android:value="com.google.firebase.components.ComponentRegistrar" />
+191-->[com.google.firebase:firebase-database:20.3.0] /Users/mango/.gradle/caches/transforms-4/9f3cfb12f0e0405d1c65cdd82bfe7556/transformed/firebase-database-20.3.0/AndroidManifest.xml:34:17-82
+192            <meta-data
+192-->[com.google.android.gms:play-services-measurement-api:21.5.0] /Users/mango/.gradle/caches/transforms-4/190dcf2f661dc886bae19d77f775cfa3/transformed/play-services-measurement-api-21.5.0/AndroidManifest.xml:37:13-39:85
+193                android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar"
+193-->[com.google.android.gms:play-services-measurement-api:21.5.0] /Users/mango/.gradle/caches/transforms-4/190dcf2f661dc886bae19d77f775cfa3/transformed/play-services-measurement-api-21.5.0/AndroidManifest.xml:38:17-139
+194                android:value="com.google.firebase.components.ComponentRegistrar" />
+194-->[com.google.android.gms:play-services-measurement-api:21.5.0] /Users/mango/.gradle/caches/transforms-4/190dcf2f661dc886bae19d77f775cfa3/transformed/play-services-measurement-api-21.5.0/AndroidManifest.xml:39:17-82
+195            <meta-data
+195-->[com.google.firebase:firebase-installations:17.2.0] /Users/mango/.gradle/caches/transforms-4/fbd7c467c0ebbf7a4ca41e29b4b0f4b3/transformed/firebase-installations-17.2.0/AndroidManifest.xml:15:13-17:85
+196                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar"
+196-->[com.google.firebase:firebase-installations:17.2.0] /Users/mango/.gradle/caches/transforms-4/fbd7c467c0ebbf7a4ca41e29b4b0f4b3/transformed/firebase-installations-17.2.0/AndroidManifest.xml:16:17-130
+197                android:value="com.google.firebase.components.ComponentRegistrar" />
+197-->[com.google.firebase:firebase-installations:17.2.0] /Users/mango/.gradle/caches/transforms-4/fbd7c467c0ebbf7a4ca41e29b4b0f4b3/transformed/firebase-installations-17.2.0/AndroidManifest.xml:17:17-82
+198            <meta-data
+198-->[com.google.firebase:firebase-installations:17.2.0] /Users/mango/.gradle/caches/transforms-4/fbd7c467c0ebbf7a4ca41e29b4b0f4b3/transformed/firebase-installations-17.2.0/AndroidManifest.xml:18:13-20:85
+199                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar"
+199-->[com.google.firebase:firebase-installations:17.2.0] /Users/mango/.gradle/caches/transforms-4/fbd7c467c0ebbf7a4ca41e29b4b0f4b3/transformed/firebase-installations-17.2.0/AndroidManifest.xml:19:17-127
+200                android:value="com.google.firebase.components.ComponentRegistrar" />
+200-->[com.google.firebase:firebase-installations:17.2.0] /Users/mango/.gradle/caches/transforms-4/fbd7c467c0ebbf7a4ca41e29b4b0f4b3/transformed/firebase-installations-17.2.0/AndroidManifest.xml:20:17-82
+201            <meta-data
+201-->[com.google.firebase:firebase-common-ktx:20.4.2] /Users/mango/.gradle/caches/transforms-4/eb944efc5976d02b4e91eaf270fa54ce/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:12:13-14:85
+202                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
+202-->[com.google.firebase:firebase-common-ktx:20.4.2] /Users/mango/.gradle/caches/transforms-4/eb944efc5976d02b4e91eaf270fa54ce/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:13:17-116
+203                android:value="com.google.firebase.components.ComponentRegistrar" />
+203-->[com.google.firebase:firebase-common-ktx:20.4.2] /Users/mango/.gradle/caches/transforms-4/eb944efc5976d02b4e91eaf270fa54ce/transformed/firebase-common-ktx-20.4.2/AndroidManifest.xml:14:17-82
+204            <meta-data
+204-->[com.google.firebase:firebase-common:20.4.2] /Users/mango/.gradle/caches/transforms-4/feefce7f31fbb35791d56a6a410ab8a3/transformed/firebase-common-20.4.2/AndroidManifest.xml:35:13-37:85
+205                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
+205-->[com.google.firebase:firebase-common:20.4.2] /Users/mango/.gradle/caches/transforms-4/feefce7f31fbb35791d56a6a410ab8a3/transformed/firebase-common-20.4.2/AndroidManifest.xml:36:17-109
+206                android:value="com.google.firebase.components.ComponentRegistrar" />
+206-->[com.google.firebase:firebase-common:20.4.2] /Users/mango/.gradle/caches/transforms-4/feefce7f31fbb35791d56a6a410ab8a3/transformed/firebase-common-20.4.2/AndroidManifest.xml:37:17-82
+207        </service>
+208
+209        <activity
+209-->[com.google.android.gms:play-services-base:18.1.0] /Users/mango/.gradle/caches/transforms-4/ec632510302d3f331d52209d0a4a051a/transformed/play-services-base-18.1.0/AndroidManifest.xml:20:9-22:45
+210            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+210-->[com.google.android.gms:play-services-base:18.1.0] /Users/mango/.gradle/caches/transforms-4/ec632510302d3f331d52209d0a4a051a/transformed/play-services-base-18.1.0/AndroidManifest.xml:20:19-85
+211            android:exported="false"
+211-->[com.google.android.gms:play-services-base:18.1.0] /Users/mango/.gradle/caches/transforms-4/ec632510302d3f331d52209d0a4a051a/transformed/play-services-base-18.1.0/AndroidManifest.xml:22:19-43
+212            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+212-->[com.google.android.gms:play-services-base:18.1.0] /Users/mango/.gradle/caches/transforms-4/ec632510302d3f331d52209d0a4a051a/transformed/play-services-base-18.1.0/AndroidManifest.xml:21:19-78
+213
+214        <receiver
+214-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:29:9-33:20
+215            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
+215-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:30:13-85
+216            android:enabled="true"
+216-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:31:13-35
+217            android:exported="false" >
+217-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:32:13-37
+218        </receiver>
+219
+220        <service
+220-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:35:9-38:40
+221            android:name="com.google.android.gms.measurement.AppMeasurementService"
+221-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:36:13-84
+222            android:enabled="true"
+222-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:37:13-35
+223            android:exported="false" />
+223-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:38:13-37
+224        <service
+224-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:39:9-43:72
+225            android:name="com.google.android.gms.measurement.AppMeasurementJobService"
+225-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:40:13-87
+226            android:enabled="true"
+226-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:41:13-35
+227            android:exported="false"
+227-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:42:13-37
+228            android:permission="android.permission.BIND_JOB_SERVICE" />
+228-->[com.google.android.gms:play-services-measurement:21.5.0] /Users/mango/.gradle/caches/transforms-4/d1a3886e901967ab2a1368117e2050cf/transformed/play-services-measurement-21.5.0/AndroidManifest.xml:43:13-69
+229
+230        <property
+230-->[com.google.android.gms:play-services-measurement-api:21.5.0] /Users/mango/.gradle/caches/transforms-4/190dcf2f661dc886bae19d77f775cfa3/transformed/play-services-measurement-api-21.5.0/AndroidManifest.xml:30:9-32:61
+231            android:name="android.adservices.AD_SERVICES_CONFIG"
+231-->[com.google.android.gms:play-services-measurement-api:21.5.0] /Users/mango/.gradle/caches/transforms-4/190dcf2f661dc886bae19d77f775cfa3/transformed/play-services-measurement-api-21.5.0/AndroidManifest.xml:31:13-65
+232            android:resource="@xml/ga_ad_services_config" />
+232-->[com.google.android.gms:play-services-measurement-api:21.5.0] /Users/mango/.gradle/caches/transforms-4/190dcf2f661dc886bae19d77f775cfa3/transformed/play-services-measurement-api-21.5.0/AndroidManifest.xml:32:13-58
+233
+234        <provider
+234-->[com.google.firebase:firebase-common:20.4.2] /Users/mango/.gradle/caches/transforms-4/feefce7f31fbb35791d56a6a410ab8a3/transformed/firebase-common-20.4.2/AndroidManifest.xml:23:9-28:39
+235            android:name="com.google.firebase.provider.FirebaseInitProvider"
+235-->[com.google.firebase:firebase-common:20.4.2] /Users/mango/.gradle/caches/transforms-4/feefce7f31fbb35791d56a6a410ab8a3/transformed/firebase-common-20.4.2/AndroidManifest.xml:24:13-77
+236            android:authorities="com.silverpixelism.hyotok.guardian.firebaseinitprovider"
+236-->[com.google.firebase:firebase-common:20.4.2] /Users/mango/.gradle/caches/transforms-4/feefce7f31fbb35791d56a6a410ab8a3/transformed/firebase-common-20.4.2/AndroidManifest.xml:25:13-72
+237            android:directBootAware="true"
+237-->[com.google.firebase:firebase-common:20.4.2] /Users/mango/.gradle/caches/transforms-4/feefce7f31fbb35791d56a6a410ab8a3/transformed/firebase-common-20.4.2/AndroidManifest.xml:26:13-43
+238            android:exported="false"
+238-->[com.google.firebase:firebase-common:20.4.2] /Users/mango/.gradle/caches/transforms-4/feefce7f31fbb35791d56a6a410ab8a3/transformed/firebase-common-20.4.2/AndroidManifest.xml:27:13-37
+239            android:initOrder="100" />
+239-->[com.google.firebase:firebase-common:20.4.2] /Users/mango/.gradle/caches/transforms-4/feefce7f31fbb35791d56a6a410ab8a3/transformed/firebase-common-20.4.2/AndroidManifest.xml:28:13-36
+240
+241        <activity
+241-->[androidx.compose.ui:ui-tooling-android:1.5.1] /Users/mango/.gradle/caches/transforms-4/5a323a76a06bc3d36e7d479e873223d9/transformed/ui-tooling-release/AndroidManifest.xml:23:9-25:39
+242            android:name="androidx.compose.ui.tooling.PreviewActivity"
+242-->[androidx.compose.ui:ui-tooling-android:1.5.1] /Users/mango/.gradle/caches/transforms-4/5a323a76a06bc3d36e7d479e873223d9/transformed/ui-tooling-release/AndroidManifest.xml:24:13-71
+243            android:exported="true" />
+243-->[androidx.compose.ui:ui-tooling-android:1.5.1] /Users/mango/.gradle/caches/transforms-4/5a323a76a06bc3d36e7d479e873223d9/transformed/ui-tooling-release/AndroidManifest.xml:25:13-36
+244        <activity
+244-->[androidx.compose.ui:ui-test-manifest:1.5.1] /Users/mango/.gradle/caches/transforms-4/488488e80681ed1cdacbaa1f81ccbbaf/transformed/ui-test-manifest-1.5.1/AndroidManifest.xml:23:9-25:39
+245            android:name="androidx.activity.ComponentActivity"
+245-->[androidx.compose.ui:ui-test-manifest:1.5.1] /Users/mango/.gradle/caches/transforms-4/488488e80681ed1cdacbaa1f81ccbbaf/transformed/ui-test-manifest-1.5.1/AndroidManifest.xml:24:13-63
+246            android:exported="true" />
+246-->[androidx.compose.ui:ui-test-manifest:1.5.1] /Users/mango/.gradle/caches/transforms-4/488488e80681ed1cdacbaa1f81ccbbaf/transformed/ui-test-manifest-1.5.1/AndroidManifest.xml:25:13-36
+247
+248        <receiver
+248-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
+249            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+249-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
+250            android:directBootAware="false"
+250-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
+251            android:enabled="true"
+251-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
+252            android:exported="true"
+252-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
+253            android:permission="android.permission.DUMP" >
+253-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
+254            <intent-filter>
+254-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
+255                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+255-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
+255-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
+256            </intent-filter>
+257            <intent-filter>
+257-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
+258                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+258-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
+258-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
+259            </intent-filter>
+260            <intent-filter>
+260-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
+261                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+261-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
+261-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
+262            </intent-filter>
+263            <intent-filter>
+263-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
+264                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+264-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
+264-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/mango/.gradle/caches/transforms-4/2bdeeee9d77ee99fbf36cec7b1fe0912/transformed/profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
+265            </intent-filter>
+266        </receiver>
+267
+268        <uses-library
+268-->[androidx.privacysandbox.ads:ads-adservices:1.0.0-beta05] /Users/mango/.gradle/caches/transforms-4/1e525debfab32e0d9da2164a372a2ed9/transformed/ads-adservices-1.0.0-beta05/AndroidManifest.xml:23:9-25:40
+269            android:name="android.ext.adservices"
+269-->[androidx.privacysandbox.ads:ads-adservices:1.0.0-beta05] /Users/mango/.gradle/caches/transforms-4/1e525debfab32e0d9da2164a372a2ed9/transformed/ads-adservices-1.0.0-beta05/AndroidManifest.xml:24:13-50
+270            android:required="false" />
+270-->[androidx.privacysandbox.ads:ads-adservices:1.0.0-beta05] /Users/mango/.gradle/caches/transforms-4/1e525debfab32e0d9da2164a372a2ed9/transformed/ads-adservices-1.0.0-beta05/AndroidManifest.xml:25:13-37
+271
+272        <meta-data
+272-->[com.google.android.gms:play-services-basement:18.1.0] /Users/mango/.gradle/caches/transforms-4/57d61b93dc3470cfbeb1da76a9c98f42/transformed/play-services-basement-18.1.0/AndroidManifest.xml:21:9-23:69
+273            android:name="com.google.android.gms.version"
+273-->[com.google.android.gms:play-services-basement:18.1.0] /Users/mango/.gradle/caches/transforms-4/57d61b93dc3470cfbeb1da76a9c98f42/transformed/play-services-basement-18.1.0/AndroidManifest.xml:22:13-58
+274            android:value="@integer/google_play_services_version" />
+274-->[com.google.android.gms:play-services-basement:18.1.0] /Users/mango/.gradle/caches/transforms-4/57d61b93dc3470cfbeb1da76a9c98f42/transformed/play-services-basement-18.1.0/AndroidManifest.xml:23:13-66
+275
+276        <service
+276-->[androidx.room:room-runtime:2.5.0] /Users/mango/.gradle/caches/transforms-4/415187adcdd62ee2dc52f2233ff53e1b/transformed/room-runtime-2.5.0/AndroidManifest.xml:24:9-28:63
+277            android:name="androidx.room.MultiInstanceInvalidationService"
+277-->[androidx.room:room-runtime:2.5.0] /Users/mango/.gradle/caches/transforms-4/415187adcdd62ee2dc52f2233ff53e1b/transformed/room-runtime-2.5.0/AndroidManifest.xml:25:13-74
+278            android:directBootAware="true"
+278-->[androidx.room:room-runtime:2.5.0] /Users/mango/.gradle/caches/transforms-4/415187adcdd62ee2dc52f2233ff53e1b/transformed/room-runtime-2.5.0/AndroidManifest.xml:26:13-43
+279            android:exported="false" />
+279-->[androidx.room:room-runtime:2.5.0] /Users/mango/.gradle/caches/transforms-4/415187adcdd62ee2dc52f2233ff53e1b/transformed/room-runtime-2.5.0/AndroidManifest.xml:27:13-37
+280    </application>
+281
+282</manifest>

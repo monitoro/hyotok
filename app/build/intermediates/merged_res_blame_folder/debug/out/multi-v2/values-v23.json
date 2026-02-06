@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.silverpixelism.hyotok.app-mergeDebugResources-65:/values-v23/values-v23.xml",
+            "map": [
+                {
+                    "source": "/Users/mango/.gradle/caches/transforms-4/032ee0c8dc1b543d48e0df4000ab128f/transformed/work-runtime-2.9.0/res/values-v23/values-v23.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,121",
+                        "endColumns": "65,62",
+                        "endOffsets": "116,179"
+                    }
+                }
+            ]
+        }
+    ]
+}
