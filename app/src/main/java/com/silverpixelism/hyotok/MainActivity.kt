@@ -28,6 +28,12 @@ import com.silverpixelism.hyotok.ui.AppSelectionScreen
 import com.silverpixelism.hyotok.ui.HomeScreen
 import com.silverpixelism.hyotok.ui.PairingScreen
 import com.silverpixelism.hyotok.ui.theme.HyoTalkTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
@@ -45,9 +51,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun startScreenCaptureService(resultCode: Int, data: Intent) {
+        val prefs = com.silverpixelism.hyotok.data.AppPreferences(this)
+        val pairingCode = prefs.getPairingCode() ?: "test_code"
+
         val intent = Intent(this, ScreenCaptureService::class.java).apply {
             putExtra("code", resultCode)
             putExtra("permissionIntent", data)
+            putExtra("pairingCode", pairingCode)
         }
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             startForegroundService(intent)
@@ -56,8 +66,12 @@ class MainActivity : ComponentActivity() {
         }
 
         // Also start Overlay Service
+        // Also start Overlay Service
         if (android.provider.Settings.canDrawOverlays(this)) {
-            startService(Intent(this, com.silverpixelism.hyotok.service.OverlayService::class.java))
+            val overlayIntent = Intent(this, com.silverpixelism.hyotok.service.OverlayService::class.java).apply {
+                putExtra("pairingCode", pairingCode)
+            }
+            startService(overlayIntent)
         }
     }
 
@@ -65,6 +79,12 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) {
         // Overlay permission granted result
+    }
+
+    private val requestAudioPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        startMediaProjection.launch(mediaProjectionManager.createScreenCaptureIntent())
     }
 
     private fun checkAndRequestOverlayPermission() {
@@ -92,14 +112,67 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = navController, startDestination = "home") {
                         composable("home") {
                             HomeScreen(
-                                onNavigateToPairing = { navController.navigate("settings") },
+                                onNavigateToPairing = { navController.navigate("pair") },
                                 onStartScreenShare = {
-                                    startMediaProjection.launch(mediaProjectionManager.createScreenCaptureIntent())
+                                    if (androidx.core.content.ContextCompat.checkSelfPermission(
+                                            this@MainActivity,
+                                            android.Manifest.permission.RECORD_AUDIO
+                                        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                                    ) {
+                                        startMediaProjection.launch(mediaProjectionManager.createScreenCaptureIntent())
+                                    } else {
+                                        requestAudioPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
+                                    }
                                 }
                             )
                         }
                         composable("pair") {
-                            PairingScreen(onBack = { navController.popBackStack() })
+                            // Permission handling for Child
+                            val context = androidx.compose.ui.platform.LocalContext.current
+                            var pendingCode by remember { mutableStateOf<String?>(null) }
+                            
+                            val permissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+                                androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+                            ) { isGranted: Boolean ->
+                                pendingCode?.let { code ->
+                                    navController.navigate("stream_viewer/$code")
+                                }
+                                pendingCode = null
+                            }
+
+                            PairingScreen(
+                                onBack = { navController.popBackStack() },
+                                onSaveCode = { code ->
+                                    val prefs = com.silverpixelism.hyotok.data.AppPreferences(this@MainActivity)
+                                    prefs.savePairingCode(code)
+                                },
+                                onStartShare = {
+                                    if (androidx.core.content.ContextCompat.checkSelfPermission(
+                                            this@MainActivity,
+                                            android.Manifest.permission.RECORD_AUDIO
+                                        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                                    ) {
+                                        startMediaProjection.launch(mediaProjectionManager.createScreenCaptureIntent())
+                                    } else {
+                                        requestAudioPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
+                                    }
+                                },
+                                onChildConnected = { code ->
+                                    // Navigate to StreamViewerScreen directly
+                                    android.widget.Toast.makeText(this@MainActivity, "3. onChildConnected 호출됨! code=$code", android.widget.Toast.LENGTH_LONG).show()
+                                    navController.navigate("stream_viewer/$code")
+                                }
+                            )
+                        }
+                        composable(
+                            "stream_viewer/{code}",
+                            arguments = listOf(androidx.navigation.navArgument("code") { type = androidx.navigation.NavType.StringType })
+                        ) { backStackEntry ->
+                            val code = backStackEntry.arguments?.getString("code") ?: ""
+                            com.silverpixelism.hyotok.ui.StreamViewerScreen(
+                                pairingCode = code,
+                                onBack = { navController.popBackStack() }
+                            )
                         }
                         composable("settings") {
                             // Temporary Settings Menu

@@ -13,7 +13,10 @@ class WebRTCClient(
     private val peerConnectionFactory: PeerConnectionFactory
     private var peerConnection: PeerConnection? = null
     private var localVideoTrack: VideoTrack? = null
-    private var rootEglBase: EglBase = EglBase.create(eglBaseContext)
+    private var localAudioTrack: AudioTrack? = null
+    val rootEglBase: EglBase = EglBase.create(eglBaseContext)
+    
+    var onError: ((String) -> Unit)? = null
 
     init {
         val options = PeerConnectionFactory.InitializationOptions.builder(context)
@@ -42,6 +45,11 @@ class WebRTCClient(
         localVideoTrack = peerConnectionFactory.createVideoTrack("ARDAMSv0", videoSource)
     }
 
+    fun startAudioCapture() {
+        val audioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
+        localAudioTrack = peerConnectionFactory.createAudioTrack("ARDAMSa0", audioSource)
+    }
+
     private fun createScreenCapturer(intent: Intent): VideoCapturer {
         return ScreenCapturerAndroid(intent, object : MediaProjection.Callback() {
             override fun onStop() {
@@ -59,6 +67,9 @@ class WebRTCClient(
         )
         peerConnection = peerConnectionFactory.createPeerConnection(rtcConfig, observer)
         localVideoTrack?.let {
+            peerConnection?.addTrack(it, listOf("ARDAMS"))
+        }
+        localAudioTrack?.let {
             peerConnection?.addTrack(it, listOf("ARDAMS"))
         }
     }
@@ -101,10 +112,14 @@ class WebRTCClient(
         peerConnection?.close()
     }
     
-    open class SdpObserverAdapter : SdpObserver {
+    open inner class SdpObserverAdapter : SdpObserver {
         override fun onCreateSuccess(p0: SessionDescription?) {}
         override fun onSetSuccess() {}
-        override fun onCreateFailure(p0: String?) {}
-        override fun onSetFailure(p0: String?) {}
+        override fun onCreateFailure(p0: String?) {
+            onError?.invoke("SDP Create Failure: $p0")
+        }
+        override fun onSetFailure(p0: String?) {
+            onError?.invoke("SDP Set Failure: $p0")
+        }
     }
 }

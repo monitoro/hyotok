@@ -13,4 +13,12 @@ class AppPreferences(context: Context) {
     fun saveSelectedApps(packageNames: Set<String>) {
         prefs.edit().putStringSet("selected_apps", packageNames).apply()
     }
+
+    fun getPairingCode(): String? {
+        return prefs.getString("pairing_code", null)
+    }
+
+    fun savePairingCode(code: String) {
+        prefs.edit().putString("pairing_code", code).apply()
+    }
 }

@@ -22,10 +22,7 @@ class ScreenCaptureService : Service() {
     override fun onCreate() {
         super.onCreate()
         startForegroundService()
-        
         eglBase = EglBase.create()
-        signalingClient = SignalingClient()
-        webRTCClient = WebRTCClient(this, eglBase!!.eglBaseContext, signalingClient)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -38,15 +35,37 @@ class ScreenCaptureService : Service() {
                      it.getParcelableExtra("permissionIntent")!!
                 }
                 
+                val pairingCode = it.getStringExtra("pairingCode") ?: "test_code"
+
+                // Initialize clients here with the code
+                if (!::signalingClient.isInitialized) {
+                    signalingClient = SignalingClient(pairingCode)
+                    signalingClient.onError = { errorMsg ->
+                        updateNotification("Connection Error", errorMsg)
+                    }
+                }
+                
+                if (!::webRTCClient.isInitialized) {
+                    webRTCClient = WebRTCClient(this, eglBase!!.eglBaseContext, signalingClient)
+                    webRTCClient.onError = { errorMsg ->
+                        updateNotification("WebRTC Error", errorMsg)
+                    }
+                }
+
                 // 1. Start Capture (Create local track)
                 webRTCClient.startScreenCapture(permissionIntent)
+                webRTCClient.startAudioCapture() // Add Audio
                 
                 // 2. Create Peer Connection
                 webRTCClient.createPeerConnection(object : org.webrtc.PeerConnection.Observer {
                      override fun onIceCandidate(candidate: org.webrtc.IceCandidate?) {
                          candidate?.let { signalingClient.sendIceCandidate(it) }
                      }
-                     override fun onIceConnectionChange(newState: org.webrtc.PeerConnection.IceConnectionState?) {}
+                     override fun onIceConnectionChange(newState: org.webrtc.PeerConnection.IceConnectionState?) {
+                        if (newState == org.webrtc.PeerConnection.IceConnectionState.FAILED) {
+                            updateNotification("Connection Failed", "ICE Connection Failed")
+                        }
+                     }
                      override fun onDataChannel(p0: org.webrtc.DataChannel?) {}
                      override fun onIceConnectionReceivingChange(p0: Boolean) {}
                      override fun onIceGatheringChange(p0: org.webrtc.PeerConnection.IceGatheringState?) {}
@@ -65,6 +84,15 @@ class ScreenCaptureService : Service() {
                 signalingClient.onIceCandidateReceived = { candidate ->
                     webRTCClient.addIceCandidate(candidate)
                 }
+                
+                // NEW: Handle disconnect signal from Guardian app
+                signalingClient.onDisconnectReceived = {
+                    android.util.Log.d("ScreenCaptureService", "Disconnect signal received, stopping service")
+                    stopSelf()
+                }
+                
+                // Start Listening Now
+                signalingClient.startListening()
                 
                 // 4. Send Offer
                 webRTCClient.sendOffer()
@@ -94,8 +122,24 @@ class ScreenCaptureService : Service() {
         startForeground(1, notification)
     }
 
+    private fun updateNotification(title: String, content: String) {
+        val notification = NotificationCompat.Builder(this, "screen_capture_channel")
+            .setContentTitle(title)
+            .setContentText(content)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .build()
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.notify(1, notification)
+    }
+
     override fun onDestroy() {
-        webRTCClient.close()
+        // Cleanup signaling data for fresh reconnection
+        if (::signalingClient.isInitialized) {
+            signalingClient.cleanup()
+        }
+        if (::webRTCClient.isInitialized) {
+            webRTCClient.close()
+        }
         super.onDestroy()
     }
 

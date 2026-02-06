@@ -21,72 +21,82 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 
-// Colors - High Contrast
-val Black = Color(0xFF000000)
-val White = Color(0xFFFFFFFF)
-val Yellow = Color(0xFFFFD700) // High visibility
-val Blue = Color(0xFF0000FF)
-val Red = Color(0xFFFF0000)
+// Premium Colors
+val PrimaryBlue = Color(0xFF4A90E2)
+val SecondaryPurple = Color(0xFF9013FE)
+val AccentPink = Color(0xFFFF4081)
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Yellow,
-    onPrimary = Black,
-    secondary = White,
-    onSecondary = Black,
-    tertiary = Red,
-    background = Black,
-    onBackground = White,
-    surface = Black,
-    onSurface = White
+// Backgrounds
+val OmniLightBackground = Color(0xFFF5F7FA) // Soft Gray-Blue
+val OmniDarkBackground = Color(0xFF1E1E2E)  // Deep Navy
+
+// Surface (Glassmorphism bases)
+val SurfaceLight = Color(0xFFFFFFFF)
+val SurfaceDark = Color(0xFF2D2D44)
+
+private val PremiumDarkColorScheme = darkColorScheme(
+    primary = PrimaryBlue,
+    onPrimary = Color.White,
+    secondary = SecondaryPurple,
+    onSecondary = Color.White,
+    tertiary = AccentPink,
+    background = OmniDarkBackground,
+    onBackground = Color.White,
+    surface = SurfaceDark,
+    onSurface = Color.White,
+    surfaceVariant = Color(0xFF3E3E5E),
+    onSurfaceVariant = Color.White
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Blue,
-    onPrimary = White,
-    secondary = Black,
-    onSecondary = White,
-    tertiary = Red,
-    background = White,
-    onBackground = Black,
-    surface = White,
-    onSurface = Black
+private val PremiumLightColorScheme = lightColorScheme(
+    primary = PrimaryBlue,
+    onPrimary = Color.White,
+    secondary = SecondaryPurple,
+    onSecondary = Color.White,
+    tertiary = AccentPink,
+    background = OmniLightBackground,
+    onBackground = Color(0xFF1A1A1A),
+    surface = SurfaceLight,
+    onSurface = Color(0xFF1A1A1A),
+    surfaceVariant = Color(0xFFFFFFFF),
+    onSurfaceVariant = Color(0xFF4A4A4A)
 )
 
-// Typography - Large Fonts
-val LargeTypography = Typography(
+// Modern Typography (Clean & Readable but not overly huge)
+val PremiumTypography = Typography(
     displayLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
-        fontSize = 57.sp,
-        lineHeight = 64.sp,
-        letterSpacing = (-0.25).sp
+        fontSize = 40.sp,
+        lineHeight = 48.sp,
+        letterSpacing = (-0.5).sp
     ),
     headlineLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
-        fontSize = 32.sp,
-        lineHeight = 40.sp,
+        fontSize = 28.sp,
+        lineHeight = 36.sp,
         letterSpacing = 0.sp
     ),
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        fontSize = 28.sp, // Larger than default
-        lineHeight = 34.sp,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 24.sp, // Much larger
-        lineHeight = 32.sp,
+        fontSize = 18.sp,
+        lineHeight = 26.sp,
         letterSpacing = 0.5.sp
     ),
     labelLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
-        fontSize = 20.sp,
-        lineHeight = 26.sp,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     )
 )
@@ -94,8 +104,7 @@ val LargeTypography = Typography(
 @Composable
 fun HyoTalkTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = false, // Disable dynamic color for consistent high contrast
+    dynamicColor: Boolean = true, // Enable dynamic color for modern feel where available
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -103,8 +112,8 @@ fun HyoTalkTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> PremiumDarkColorScheme
+        else -> PremiumLightColorScheme
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -117,7 +126,7 @@ fun HyoTalkTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = LargeTypography,
+        typography = PremiumTypography,
         content = content
     )
 }
