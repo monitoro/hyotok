@@ -27,6 +27,7 @@ import com.silverpixelism.hyotok.service.ScreenCaptureService
 import com.silverpixelism.hyotok.ui.AppSelectionScreen
 import com.silverpixelism.hyotok.ui.HomeScreen
 import com.silverpixelism.hyotok.ui.PairingScreen
+import com.silverpixelism.hyotok.ui.SettingsScreen
 import com.silverpixelism.hyotok.ui.theme.HyoTalkTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -70,8 +71,7 @@ class MainActivity : ComponentActivity() {
             startService(intent)
         }
 
-        // Also start Overlay Service
-        // Also start Overlay Service
+        // Start Overlay Service for pointer display
         if (android.provider.Settings.canDrawOverlays(this)) {
             val overlayIntent = Intent(this, com.silverpixelism.hyotok.service.OverlayService::class.java).apply {
                 putExtra("pairingCode", pairingCode)
@@ -138,8 +138,12 @@ class MainActivity : ComponentActivity() {
                                     } else {
                                         requestAudioPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
                                     }
-                                }
+                                },
+                                onNavigateToSettings = { navController.navigate("settings") }
                             )
+                        }
+                        composable("settings") {
+                            SettingsScreen(onBack = { navController.popBackStack() })
                         }
                         composable("pair") {
                             // Permission handling for Child

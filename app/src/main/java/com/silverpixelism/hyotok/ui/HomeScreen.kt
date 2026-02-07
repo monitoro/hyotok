@@ -50,7 +50,8 @@ data class HomeGridItem(
 @Composable
 fun HomeScreen(
     onNavigateToPairing: () -> Unit,
-    onStartScreenShare: () -> Unit
+    onStartScreenShare: () -> Unit,
+    onNavigateToSettings: () -> Unit = {}
 ) {
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
@@ -149,8 +150,35 @@ fun HomeScreen(
     // Grid Items
     val gridItems = listOf(
         HomeGridItem(
+            title = "전화",
+            icon = Icons.Rounded.Phone,
+            backgroundColor = Color(0xFF4CAF50), // Green
+            contentColor = White,
+            onClick = {
+                val intent = Intent(Intent.ACTION_DIAL)
+                context.startActivity(intent)
+            }
+        ),
+        HomeGridItem(
+            title = "메세지",
+            icon = Icons.Rounded.Email,
+            backgroundColor = Color(0xFF2196F3), // Blue
+            contentColor = White,
+            onClick = {
+                try {
+                    val intent = Intent(Intent.ACTION_MAIN).apply {
+                        addCategory(Intent.CATEGORY_APP_MESSAGING)
+                    }
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("sms:"))
+                    context.startActivity(intent)
+                }
+            }
+        ),
+        HomeGridItem(
             title = "카톡",
-            icon = Icons.Rounded.Email, // Placeholder for KakaoTalk
+            icon = Icons.Rounded.Email,
             backgroundColor = BrightYellow,
             contentColor = DarkText,
             onClick = {
@@ -158,15 +186,13 @@ fun HomeScreen(
                     val intent = context.packageManager.getLaunchIntentForPackage("com.kakao.talk")
                     if (intent != null) {
                         context.startActivity(intent)
-                    } else {
-                         // Fallback or Toast
                     }
                 } catch (e: Exception) {}
             }
         ),
         HomeGridItem(
             title = "카메라",
-            icon = Icons.Rounded.Face, // Using Face/Camera icon
+            icon = Icons.Rounded.Face,
             backgroundColor = BrightYellow,
             contentColor = DarkText,
             onClick = {
@@ -192,41 +218,38 @@ fun HomeScreen(
         ),
         HomeGridItem(
             title = "날씨",
-            icon = Icons.Rounded.Info, // Placeholder for Weather
+            icon = Icons.Rounded.Info,
             backgroundColor = BrightYellow,
             contentColor = DarkText,
             onClick = {
-                // Open Browser for Weather
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://search.naver.com/search.naver?query=날씨")))
             }
         ),
         HomeGridItem(
-            title = "도움\n요청",
-            icon = null,
-            backgroundColor = White,
-            contentColor = DarkText,
+            title = "가족전화",
+            icon = Icons.Rounded.Star,
+            backgroundColor = Color(0xFFFF9800), // Orange
+            contentColor = White,
             onClick = {
-                // Emergency Call or Contact
-                val intent = Intent(Intent.ACTION_DIAL)
-                context.startActivity(intent)
+                // Open contacts favorites tab
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                        data = android.provider.ContactsContract.Contacts.CONTENT_URI
+                        putExtra("android.provider.extra.CONTENT_FILTER_TYPE", 1) // Favorites
+                    }
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    val intent = Intent(Intent.ACTION_VIEW, android.provider.ContactsContract.Contacts.CONTENT_URI)
+                    context.startActivity(intent)
+                }
             }
         ),
         HomeGridItem(
-            title = "화면 공유",
-            icon = Icons.Rounded.Share,
-            backgroundColor = BrightYellow,
-            contentColor = DarkText,
-            onClick = {
-                onStartScreenShare()
-            }
-        ),
-        HomeGridItem(
-            title = "자녀 연결",
+            title = "자녀도움",
             icon = Icons.Rounded.Person,
-            backgroundColor = White,
-            contentColor = DarkText,
+            backgroundColor = Color(0xFF9C27B0), // Purple
+            contentColor = White,
             onClick = {
-                // Both Parent and Guardian go directly to Pairing Screen
                 onNavigateToPairing()
             }
         )
@@ -244,7 +267,7 @@ fun HomeScreen(
             contentAlignment = Alignment.CenterEnd
         ) {
             IconButton(
-                onClick = { onNavigateToPairing() },
+                onClick = { onNavigateToSettings() },
                 modifier = Modifier
                     .clip(CircleShape)
                     .background(Color.White.copy(alpha = 0.2f))

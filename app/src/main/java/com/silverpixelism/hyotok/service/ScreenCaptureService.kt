@@ -37,6 +37,18 @@ class ScreenCaptureService : Service() {
                 
                 val pairingCode = it.getStringExtra("pairingCode") ?: "test_code"
 
+                // Send Screen Size to Firebase for coordinate normalization in Guardian App
+                val windowManager = getSystemService(Context.WINDOW_SERVICE) as android.view.WindowManager
+                val realMetrics = android.util.DisplayMetrics()
+                @Suppress("DEPRECATION")
+                windowManager.defaultDisplay.getRealMetrics(realMetrics)
+                val screenWidth = realMetrics.widthPixels
+                val screenHeight = realMetrics.heightPixels
+                
+                com.google.firebase.database.FirebaseDatabase.getInstance()
+                    .getReference("sessions").child(pairingCode).child("screenSize")
+                    .setValue(mapOf("width" to screenWidth, "height" to screenHeight))
+
                 // Initialize clients here with the code
                 if (!::signalingClient.isInitialized) {
                     signalingClient = SignalingClient(pairingCode)
@@ -83,13 +95,6 @@ class ScreenCaptureService : Service() {
                      override fun onAddTrack(p0: org.webrtc.RtpReceiver?, p1: Array<out org.webrtc.MediaStream>?) {}
                      override fun onIceCandidatesRemoved(p0: Array<out org.webrtc.IceCandidate>?) {}
                 })
-                
-                // 3. Setup touch data callback via DataChannel (P2P, low latency)
-                webRTCClient.onTouchReceived = { x, y ->
-                    android.util.Log.d("ScreenCaptureService", "Touch received via DataChannel: ($x, $y)")
-                    // Dispatch to RemoteControlService for actual touch
-                    RemoteControlService.instance?.performTapNormalized(x, y)
-                }
                 
                 // 4. Setup Signaling Callbacks
                 signalingClient.onAnswerReceived = { answerSdp ->

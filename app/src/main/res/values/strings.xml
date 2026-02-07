@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">HyoTalk</string>
     <string name="launcher_name">HyoTalk Launcher</string>
-    <string name="accessibility_service_description">효톡 원격 제어 서비스입니다. 자녀가 화면을 터치하면 부모님 폰에서 해당 위치를 터치합니다.</string>
 </resources>

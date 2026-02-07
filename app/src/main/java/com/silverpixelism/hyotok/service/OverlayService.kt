@@ -10,16 +10,21 @@ import android.view.Gravity
 import android.view.WindowManager
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -33,7 +38,14 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.silverpixelism.hyotok.webrtc.SignalingClient
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.delay
+
+// Trail point with timestamp for fade effect
+data class TrailPoint(val x: Float, val y: Float, val timestamp: Long)
 
 class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStateRegistryOwner {
 
@@ -47,7 +59,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private lateinit var windowManager: WindowManager
     private var overlayView: ComposeView? = null
-    private lateinit var signalingClient: SignalingClient
+    private var pairingCode: String = ""
+    private var pointerListener: ValueEventListener? = null
+
+    // Trail points for drag effect
+    private val _trailPoints = mutableStateListOf<TrailPoint>()
 
     override fun onCreate() {
         super.onCreate()
@@ -60,36 +76,43 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
 
-        val pairingCode = intent?.getStringExtra("pairingCode") ?: return START_NOT_STICKY
+        pairingCode = intent?.getStringExtra("pairingCode") ?: return START_NOT_STICKY
         
-        if (!::signalingClient.isInitialized) {
-            signalingClient = SignalingClient(pairingCode)
-            
-            // Handle disconnect signal
-            signalingClient.onDisconnectReceived = {
-                stopSelf()
-            }
-            
+        if (overlayView == null) {
             setupOverlay()
-            signalingClient.startListening()
+            startListeningForPointer()
         }
 
         return START_STICKY
     }
 
     private fun setupOverlay() {
+        // Get REAL screen metrics including navigation bar
+        val realMetrics = android.util.DisplayMetrics()
+        @Suppress("DEPRECATION")
+        windowManager.defaultDisplay.getRealMetrics(realMetrics)
+        val screenWidth = realMetrics.widthPixels.toFloat()
+        val screenHeight = realMetrics.heightPixels.toFloat()
+        
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             else
+                @Suppress("DEPRECATION")
                 WindowManager.LayoutParams.TYPE_PHONE,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
         )
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        }
+        
         params.gravity = Gravity.TOP or Gravity.START
 
         overlayView = ComposeView(this).apply {
@@ -97,18 +120,65 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             setViewTreeViewModelStoreOwner(this@OverlayService)
             setViewTreeSavedStateRegistryOwner(this@OverlayService)
             setContent {
-                OverlayContent(signalingClient)
+                OverlayContent(_trailPoints, screenWidth, screenHeight)
             }
         }
 
         windowManager.addView(overlayView, params)
     }
 
+    private fun startListeningForPointer() {
+        val database = FirebaseDatabase.getInstance()
+        val pointerRef = database.getReference("pointer").child(pairingCode)
+        
+        var lastSoundTime = 0L
+        
+        pointerListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val x = snapshot.child("x").getValue(Float::class.java) ?: return
+                val y = snapshot.child("y").getValue(Float::class.java) ?: return
+                
+                // Add new trail point
+                val now = System.currentTimeMillis()
+                _trailPoints.add(TrailPoint(x, y, now))
+                
+                // Play sound effect (throttled to every 300ms)
+                if (now - lastSoundTime > 300) {
+                    try {
+                        val audioManager = getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
+                        audioManager.playSoundEffect(android.media.AudioManager.FX_KEY_CLICK)
+                    } catch (e: Exception) {
+                        android.util.Log.e("OverlayService", "Sound error: ${e.message}")
+                    }
+                    lastSoundTime = now
+                }
+                
+                // Keep only recent points (last 1.5 seconds)
+                val cutoff = now - 1500
+                _trailPoints.removeAll { it.timestamp < cutoff }
+            }
+            
+            override fun onCancelled(error: DatabaseError) {
+                android.util.Log.e("OverlayService", "Pointer listener cancelled: ${error.message}")
+            }
+        }
+        
+        pointerRef.addValueEventListener(pointerListener!!)
+    }
+
     override fun onDestroy() {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         viewModelStore.clear()
+        
+        pointerListener?.let {
+            FirebaseDatabase.getInstance()
+                .getReference("pointer").child(pairingCode)
+                .removeEventListener(it)
+        }
+        
         if (overlayView != null) {
             windowManager.removeView(overlayView)
+            overlayView = null
         }
         super.onDestroy()
     }
@@ -117,87 +187,77 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 }
 
 @Composable
-fun OverlayContent(signalingClient: SignalingClient) {
-    var pointerX by remember { mutableStateOf(-100f) }
-    var pointerY by remember { mutableStateOf(-100f) }
+fun OverlayContent(trailPoints: List<TrailPoint>, screenWidth: Float, screenHeight: Float) {
+    var currentTime by remember { mutableLongStateOf(System.currentTimeMillis()) }
     
-    // Animate opacity for fade out
-    val alphaAnim = remember { Animatable(0f) }
-
-    DisposableEffect(Unit) {
-        signalingClient.onTouchReceived = { x, y ->
-            // Keep in mind x, y are normalized (0.0 - 1.0)
-            pointerX = x
-            pointerY = y
-            
-            // Perform actual tap via AccessibilityService
-            RemoteControlService.instance?.performTapNormalized(x, y)
-        }
-        onDispose {}
-    }
-    
-    // Trigger animation when coordinates change
-    LaunchedEffect(pointerX, pointerY) {
-        if (pointerX >= 0 && pointerY >= 0) {
-            alphaAnim.snapTo(1f)
-            alphaAnim.animateTo(0f, animationSpec = tween(1500))
+    // Update time every 50ms to animate fade
+    LaunchedEffect(Unit) {
+        while (true) {
+            currentTime = System.currentTimeMillis()
+            delay(50)
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (alphaAnim.value > 0f) {
-            PointerView(
-                x = pointerX, 
-                y = pointerY, 
-                alpha = alphaAnim.value
-            )
-        }
-    }
-}
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            if (trailPoints.isEmpty()) return@Canvas
 
-@Composable
-fun PointerView(x: Float, y: Float, alpha: Float) {
-    // Infinite Animation for ripple
-    val infiniteTransition = rememberInfiniteTransition()
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.5f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
+            val now = currentTime
+            val trailDuration = 1200L // 1.2초 잔상
 
-    val pointerSize = 60.dp
-    val density = androidx.compose.ui.platform.LocalDensity.current
-    val pointerSizePx = with(density) { pointerSize.toPx() }
+            // Draw fading circles for trail effect (잔상)
+            trailPoints.forEach { point ->
+                val age = now - point.timestamp
+                if (age < trailDuration && age > 100) { // 100ms 이후부터 잔상 표시
+                    val alpha = (1f - (age.toFloat() / trailDuration)) * 0.6f
+                    val scale = 1f - (age.toFloat() / trailDuration) * 0.7f
+                    
+                    val screenX = point.x * screenWidth
+                    val screenY = point.y * screenHeight
+                    val baseRadius = 18.dp.toPx()
+                    
+                    // Trail circle (잔상 원)
+                    drawCircle(
+                        color = Color.Red.copy(alpha = alpha),
+                        radius = baseRadius * scale,
+                        center = Offset(screenX, screenY)
+                    )
+                }
+            }
 
-    // Use BoxWithConstraints to get actual available size
-    androidx.compose.foundation.layout.BoxWithConstraints(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val maxWidthPx = constraints.maxWidth.toFloat()
-        val maxHeightPx = constraints.maxHeight.toFloat()
-        
-        // Calculate position (centered on touch point)
-        val posX = (x * maxWidthPx - pointerSizePx / 2).toInt()
-        val posY = (y * maxHeightPx - pointerSizePx / 2).toInt()
-
-        Box(
-            modifier = Modifier.offset { IntOffset(posX, posY) }
-        ) {
-            Canvas(modifier = Modifier.size(pointerSize)) {
-                // Draw Ripple
-                drawCircle(
-                    color = Color.Red.copy(alpha = alpha * 0.5f),
-                    radius = size.minDimension / 2 * scale,
-                    style = Stroke(width = 4.dp.toPx())
-                )
-                // Draw Center
-                drawCircle(
-                    color = Color.Red.copy(alpha = alpha),
-                    radius = size.minDimension / 4
-                )
+            // Draw current pointer (현재 포인터)
+            if (trailPoints.isNotEmpty()) {
+                val lastPoint = trailPoints.last()
+                val age = now - lastPoint.timestamp
+                if (age < 800) { // 0.8초간 포인터 표시
+                    val screenX = lastPoint.x * screenWidth
+                    val screenY = lastPoint.y * screenHeight
+                    val pointerRadius = 20.dp.toPx()
+                    
+                    // Ripple effect (물결 효과)
+                    val rippleAlpha = 0.5f - (age.toFloat() / 800f) * 0.4f
+                    val rippleScale = 1f + (age.toFloat() / 800f) * 0.8f
+                    drawCircle(
+                        color = Color.Red.copy(alpha = rippleAlpha),
+                        radius = pointerRadius * rippleScale * 1.5f,
+                        center = Offset(screenX, screenY),
+                        style = Stroke(width = 4.dp.toPx())
+                    )
+                    
+                    // Main pointer (메인 포인터)
+                    drawCircle(
+                        color = Color.Red.copy(alpha = 0.9f),
+                        radius = pointerRadius,
+                        center = Offset(screenX, screenY)
+                    )
+                    
+                    // Center dot (중앙 점)
+                    drawCircle(
+                        color = Color.White,
+                        radius = pointerRadius * 0.3f,
+                        center = Offset(screenX, screenY)
+                    )
+                }
             }
         }
     }
