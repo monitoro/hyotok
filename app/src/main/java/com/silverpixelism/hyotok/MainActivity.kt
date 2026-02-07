@@ -200,38 +200,8 @@ class MainActivity : ComponentActivity() {
                                 onBack = { navController.popBackStack() }
                             )
                         }
-                        composable("settings") {
-                            // Temporary Settings Menu
-                            Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                                Text("설정", style = MaterialTheme.typography.headlineMedium)
-                                
-                                Button(
-                                    onClick = { navController.navigate("pair") },
-                                    modifier = Modifier.padding(top = 16.dp)
-                                ) {
-                                    Text("자녀 연결")
-                                }
-                                
-                                // Notification settings button removed
-                                
-                                Button(
-                                    onClick = { navController.navigate("app_selection") },
-                                    modifier = Modifier.padding(top = 8.dp)
-                                ) {
-                                    Text("홈 화면 앱 선택")
-                                }
-                                
-                                Button(
-                                    onClick = { navController.popBackStack() },
-                                    modifier = Modifier.padding(top = 24.dp)
-                                ) {
-                                    Text("닫기")
-                                }
-                            }
-                        }
-                        composable("app_selection") {
-                            AppSelectionScreen(onBack = { navController.popBackStack() })
-                        }
+                        // Removed duplicate settings comosable and obsolete app_selection
+                        // The correct SettingsScreen is defined above.
                     }
                 }
             }

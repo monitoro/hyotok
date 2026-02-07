@@ -4,6 +4,9 @@ plugins {
     id("com.google.gms.google-services")
 }
 
+import java.util.Properties
+import java.io.FileInputStream
+
 android {
     namespace = "com.silverpixelism.hyotok"
     compileSdk = 34
@@ -27,17 +30,39 @@ android {
             dimension = "mode"
             // Default applicationId
             resValue("string", "app_name", "HyoTalk")
+            // Parent App Version
+            versionCode = 1
+            versionName = "1.0.0"
         }
         create("guardian") {
             dimension = "mode"
             applicationIdSuffix = ".guardian"
             resValue("string", "app_name", "HyoTalk Guardian")
+            // Guardian App Version
+            versionCode = 1
+            versionName = "1.0.0"
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            val keystorePropertiesFile = rootProject.file("keystore.properties")
+            val keystoreProperties = Properties()
+            if (keystorePropertiesFile.exists()) {
+                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+            }
+            storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
         }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true // Enable shrinking
+            isShrinkResources = true // Enable resource shrinking
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -74,6 +99,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.navigation:navigation-compose:2.7.6")
+    implementation("androidx.compose.material:material-icons-extended")
     implementation("io.getstream:stream-webrtc-android:1.3.10")
     
     // Accompanist for Drawable conversion
@@ -90,6 +116,17 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-database") // Realtime DB
     // implementation("com.google.firebase:firebase-messaging") // FCM - Not prioritized yet
+    
+    // Retrofit & Gson
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    // Location
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    // Coil for Image Loading
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

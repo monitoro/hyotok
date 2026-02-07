@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size // Add size import
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
@@ -24,7 +26,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.filled.Apps
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.TouchApp // Use basic filled icon
+import androidx.compose.material.icons.filled.BatteryChargingFull // Add Battery Icons
+import androidx.compose.material.icons.filled.BatteryStd
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.foundation.clickable // Add clickable import
 import com.silverpixelism.hyotok.webrtc.SignalingClient
 import com.silverpixelism.hyotok.webrtc.WebRTCClient
 import org.webrtc.SurfaceViewRenderer
@@ -50,18 +60,51 @@ class GuardianHomeActivity : ComponentActivity() {
 @Composable
 fun GuardianHomeScreen() {
     val context = androidx.compose.ui.platform.LocalContext.current
-    var pairingCode by remember { mutableStateOf("") }
+    // Load saved pairing code
+    val prefs = remember { com.silverpixelism.hyotok.data.AppPreferences(context) }
+    var pairingCode by remember { mutableStateOf(prefs.getPairingCode() ?: "") }
+    
     var isConnected by remember { mutableStateOf(false) }
     val signalingClient = remember { mutableStateOf<com.silverpixelism.hyotok.webrtc.SignalingClient?>(null) }
     
+    // Safety Data States
+    var batteryLevel by remember { mutableIntStateOf(-1) }
+    var isCharging by remember { mutableStateOf(false) }
+    var latitude by remember { mutableDoubleStateOf(0.0) }
+    var longitude by remember { mutableDoubleStateOf(0.0) }
+    var lastUpdated by remember { mutableLongStateOf(0L) }
+    
+    // Listen to Safety Data when pairingCode is available
+    LaunchedEffect(pairingCode) {
+        if (pairingCode.isNotEmpty()) {
+            val database = com.google.firebase.database.FirebaseDatabase.getInstance()
+            val safetyRef = database.getReference("safety").child(pairingCode)
+            
+            val listener = object : com.google.firebase.database.ValueEventListener {
+                override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
+                    batteryLevel = snapshot.child("batteryLevel").getValue(Int::class.java) ?: -1
+                    isCharging = snapshot.child("isCharging").getValue(Boolean::class.java) ?: false
+                    latitude = snapshot.child("latitude").getValue(Double::class.java) ?: 0.0
+                    longitude = snapshot.child("longitude").getValue(Double::class.java) ?: 0.0
+                    lastUpdated = snapshot.child("lastUpdated").getValue(Long::class.java) ?: 0L
+                }
+                override fun onCancelled(error: com.google.firebase.database.DatabaseError) {}
+            }
+            safetyRef.addValueEventListener(listener)
+        }
+    }
+    
+    // Background Color
+    val backgroundColor = androidx.compose.ui.graphics.Color(0xFF1A1F36)
+    
     Column(
-        modifier = Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color(0xFF1A1F36))
+        modifier = Modifier.fillMaxSize().background(backgroundColor)
     ) {
         // Header - Always visible
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(androidx.compose.ui.graphics.Color(0xFF1A1F36))
+                .background(backgroundColor)
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -87,44 +130,212 @@ fun GuardianHomeScreen() {
         }
         
         if (!isConnected) {
-            // Connection UI
+            // Connection UI - Split into Input (Top) and Tutorial (Bottom)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(24.dp),
-                verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
+                    .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                androidx.compose.material3.TextField(
-                    value = pairingCode,
-                    onValueChange = { pairingCode = it },
-                    label = { Text("부모님 폰의 연결 코드 6자리") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-           
-                Spacer(modifier = Modifier.height(24.dp))
-           
-                Button(
-                    onClick = {
-                        if (pairingCode.isNotEmpty()) {
-                            val database = com.google.firebase.database.FirebaseDatabase.getInstance()
-                            database.getReference("users").child(pairingCode).setValue("connected")
-                                .addOnSuccessListener {
-                                    android.widget.Toast.makeText(context, "연결 성공!", android.widget.Toast.LENGTH_SHORT).show()
-                                    isConnected = true
-                                }
-                                .addOnFailureListener { e ->
-                                    android.widget.Toast.makeText(context, "연결 실패: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
-                                }
-                        } else {
-                            android.widget.Toast.makeText(context, "코드를 입력하세요", android.widget.Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+                // 1. Input Section (Weight 0.35) - Top Area
+                Column(
+                    modifier = Modifier
+                        .weight(0.35f)
+                        .fillMaxWidth(),
+                    verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center, // Center vertically in top area
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("연결하기", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = "부모님 폰과 연결하기",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = androidx.compose.ui.graphics.Color.White,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    
+                    androidx.compose.material3.TextField(
+                        value = pairingCode,
+                        onValueChange = { 
+                            pairingCode = it 
+                            prefs.savePairingCode(it) // Auto save
+                        },
+                        label = { Text("부모님 폰의 연결 코드 6자리") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        colors = androidx.compose.material3.TextFieldDefaults.colors(
+                            focusedContainerColor = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.1f),
+                            unfocusedContainerColor = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.1f),
+                            focusedTextColor = androidx.compose.ui.graphics.Color.White,
+                            unfocusedTextColor = androidx.compose.ui.graphics.Color.White,
+                            focusedLabelColor = androidx.compose.ui.graphics.Color(0xFFA5B4FC), // Light Indigo
+                            unfocusedLabelColor = androidx.compose.ui.graphics.Color.Gray
+                        )
+                    )
+            
+                    Spacer(modifier = Modifier.height(16.dp))
+            
+                    Button(
+                        onClick = {
+                            if (pairingCode.isNotEmpty()) {
+                                val database = com.google.firebase.database.FirebaseDatabase.getInstance()
+                                database.getReference("users").child(pairingCode).setValue("connected")
+                                    .addOnSuccessListener {
+                                        android.widget.Toast.makeText(context, "연결 성공!", android.widget.Toast.LENGTH_SHORT).show()
+                                        isConnected = true
+                                    }
+                                    .addOnFailureListener { e ->
+                                        android.widget.Toast.makeText(context, "연결 실패: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+                                    }
+                            } else {
+                                android.widget.Toast.makeText(context, "코드를 입력하세요", android.widget.Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                            containerColor = androidx.compose.ui.graphics.Color(0xFF4F46E5) // Indigo 600
+                        )
+                    ) {
+                        Text("연결하기", style = MaterialTheme.typography.titleMedium, color = androidx.compose.ui.graphics.Color.White)
+                    }
+                }
+                
+                // Divider
+                androidx.compose.material3.Divider(
+                    color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.1f),
+                    thickness = 1.dp
+                )
+                
+                // 2. Info & Tutorial Section (Weight 0.65) - Bottom Area
+                Column(
+                    modifier = Modifier
+                        .weight(0.65f)
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)
+                ) {
+                    // Safety Status Card (Only if data exists)
+                    if (batteryLevel != -1) {
+                         Text(
+                            text = "부모님 현재 상태",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = androidx.compose.ui.graphics.Color(0xFF63B3ED), // Light Blue
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                        
+                        androidx.compose.material3.Card(
+                            colors = androidx.compose.material3.CardDefaults.cardColors(
+                                containerColor = androidx.compose.ui.graphics.Color(0xFF2D3748)
+                            ),
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = if (isCharging) Icons.Default.BatteryChargingFull else Icons.Default.BatteryStd,
+                                        contentDescription = "Battery",
+                                        tint = if (batteryLevel < 20) androidx.compose.ui.graphics.Color.Red else androidx.compose.ui.graphics.Color.Green,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "배터리 ${batteryLevel}%" + if (isCharging) " (충전 중)" else "",
+                                        color = androidx.compose.ui.graphics.Color.White,
+                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                    )
+                                }
+                                
+                                Spacer(modifier = Modifier.height(8.dp))
+                                
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = Icons.Default.LocationOn,
+                                        contentDescription = "Location",
+                                        tint = androidx.compose.ui.graphics.Color.Yellow,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    if (latitude != 0.0) {
+                                        Text(
+                                            text = "위치 확인됨",
+                                            color = androidx.compose.ui.graphics.Color.White,
+                                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                            modifier = Modifier.clickable {
+                                                val uri = android.net.Uri.parse("geo:$latitude,$longitude?q=$latitude,$longitude(Parents)")
+                                                val mapIntent = Intent(Intent.ACTION_VIEW, uri)
+                                                mapIntent.setPackage("com.google.android.apps.maps")
+                                                if (mapIntent.resolveActivity(context.packageManager) != null) {
+                                                    context.startActivity(mapIntent)
+                                                } else {
+                                                    // Fallback if maps app not installed
+                                                    context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+                                                }
+                                            }
+                                        )
+                                        Text(
+                                            text = " (지도 보기)",
+                                            color = androidx.compose.ui.graphics.Color.Gray,
+                                            fontSize = 12.sp
+                                        )
+                                    } else {
+                                        Text(
+                                            text = "위치 정보 없음",
+                                            color = androidx.compose.ui.graphics.Color.Gray
+                                        )
+                                    }
+                                }
+                                
+                                Spacer(modifier = Modifier.height(8.dp))
+                                
+                                val timeDiff = (System.currentTimeMillis() - lastUpdated) / (1000 * 60)
+                                Text(
+                                    text = "마지막 업데이트: ${timeDiff}분 전",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = androidx.compose.ui.graphics.Color.Gray
+                                )
+                            }
+                        }
+                    }
+                
+                    Text(
+                        text = "부모님 폰 설정 가이드",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = androidx.compose.ui.graphics.Color(0xFFA5B4FC), // Light Indigo
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    
+                    androidx.compose.foundation.lazy.LazyColumn(
+                        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 24.dp)
+                    ) {
+                        item {
+                            TutorialCard(
+                                icon = Icons.Default.Settings,
+                                title = "1. 화면 및 소리 설정",
+                                description = "설정 메뉴 > 화면 및 소리에서 글자 크기와 화면 밝기를 부모님이 보시기 편하게 조절해주세요. 벨소리 크기도 최대로 설정하는 것이 좋습니다."
+                            )
+                        }
+                        item {
+                            TutorialCard(
+                                icon = Icons.Default.Apps,
+                                title = "2. 홈 화면 앱 추가",
+                                description = "설정 메뉴 > 홈 화면 구성에서 부모님이 자주 쓰시는 앱(유튜브, 카카오톡 등)을 선택하면 홈 화면 하단에 추가됩니다."
+                            )
+                        }
+                        item {
+                            TutorialCard(
+                                icon = Icons.Default.People,
+                                title = "3. 가족 연결 설정",
+                                description = "설정 메뉴 > 가족 연결에서 '가족 단톡방 링크'와 '자녀 연락처'를 등록하면 홈 화면에서 유기적으로 연결할 수 있습니다."
+                            )
+                        }
+                        item {
+                            TutorialCard(
+                                icon = Icons.Default.TouchApp,
+                                title = "4. 도움받기 기능",
+                                description = "부모님이 홈 화면의 '도움받기' 버튼을 누르면 자녀에게 연결 요청이 옵니다. 화면을 보면서 원격으로 도와드릴 수 있습니다."
+                            )
+                        }
+                    }
                 }
             }
         } else {
@@ -134,6 +345,45 @@ fun GuardianHomeScreen() {
                 onDisconnect = { isConnected = false },
                 onSignalingClient = { signalingClient.value = it }
             )
+        }
+    }
+}
+
+@Composable
+fun TutorialCard(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, description: String) {
+    androidx.compose.material3.Card(
+        colors = androidx.compose.material3.CardDefaults.cardColors(
+            containerColor = androidx.compose.ui.graphics.Color(0xFF2D3748) // Dark Slate
+        ),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = androidx.compose.ui.graphics.Color(0xFF63B3ED), // Light Blue
+                modifier = Modifier.padding(top = 2.dp).size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    color = androidx.compose.ui.graphics.Color.White
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = androidx.compose.ui.graphics.Color(0xFFCBD5E0), // Light Gray
+                    lineHeight = 20.sp
+                )
+            }
         }
     }
 }

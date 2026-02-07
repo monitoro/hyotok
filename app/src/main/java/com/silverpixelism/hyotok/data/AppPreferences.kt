@@ -54,4 +54,46 @@ class AppPreferences(context: Context) {
         val contactsStr = contacts.joinToString(";;") { "${it.first}|${it.second}" }
         prefs.edit().putString("child_contacts", contactsStr).apply()
     }
+
+    // 햅틱 피드백 설정 (기본값: True)
+    fun isHapticEnabled(): Boolean {
+        return prefs.getBoolean("haptic_enabled", true)
+    }
+
+    fun setHapticEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean("haptic_enabled", enabled).apply()
+    }
+
+    // 가족 단톡방 링크
+    fun getFamilyChatUrl(): String {
+        return prefs.getString("family_chat_url", "") ?: ""
+    }
+
+    fun saveFamilyChatUrl(url: String) {
+        prefs.edit().putString("family_chat_url", url).apply()
+    }
+
+    // 홈 화면 앱 목록 (패키지명 리스트, 순서 보장)
+    // 기본 앱: 전화, 메시지, 카카오톡, 유튜브, 카메라, 사진첩
+    fun getHomeApps(): List<String> {
+        val json = prefs.getString("home_apps", null)
+        return if (json != null) {
+            json.split(",").filter { it.isNotEmpty() }
+        } else {
+            // Default Apps
+            listOf(
+                "com.android.dialer", // 전화 (Placeholder)
+                "com.android.mms",    // 메시지 (Placeholder)
+                "com.kakao.talk",     // 카카오톡
+                "com.google.android.youtube", // 유튜브
+                "com.sec.android.app.camera", // 카메라 (Samsung)
+                "com.sec.android.gallery3d"   // 갤러리 (Samsung)
+            )
+        }
+    }
+
+    fun saveHomeApps(packageNames: List<String>) {
+        val json = packageNames.joinToString(",")
+        prefs.edit().putString("home_apps", json).apply()
+    }
 }
