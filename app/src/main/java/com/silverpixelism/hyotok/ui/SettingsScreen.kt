@@ -6,12 +6,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.rounded.*
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -48,6 +55,12 @@ fun SettingsScreen(onBack: () -> Unit) {
     var childContacts by remember { mutableStateOf(prefs.getChildContacts()) }
     var hapticEnabled by remember { mutableStateOf(prefs.isHapticEnabled()) }
     var familyChatUrl by remember { mutableStateOf(prefs.getFamilyChatUrl()) }
+
+    // User Info State
+    var userName by remember { mutableStateOf(prefs.getUserName()) }
+    var userPhoneNumber by remember { mutableStateOf(prefs.getUserPhoneNumber()) }
+    var showUserName by remember { mutableStateOf(prefs.isUserNameVisible()) }
+    var showUserPhoneNumber by remember { mutableStateOf(prefs.isUserPhoneNumberVisible()) }
     
     // App Selection
     var showAppSelectionDialog by remember { mutableStateOf(false) }
@@ -113,65 +126,110 @@ fun SettingsScreen(onBack: () -> Unit) {
         )
     }
 
-    // App Selection Dialog
+    // App Selection Dialog (Custom Grid UI)
     if (showAppSelectionDialog) {
-        AlertDialog(
-            onDismissRequest = { showAppSelectionDialog = false },
-            title = { Text("홈 화면 앱 선택") },
-            text = {
-                Column(modifier = Modifier.height(300.dp).verticalScroll(rememberScrollState())) {
+        Dialog(onDismissRequest = { showAppSelectionDialog = false }) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF2D3436)), // Dark Background
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(600.dp)
+                    .padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "홈 화면 앱 추가",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    
                     if (installedApps.isEmpty()) {
-                        Box(modifier = Modifier.fillMaxWidth().height(100.dp), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(color = SettingsPrimaryColor)
+                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(color = Color.White)
                         }
                     } else {
-                        installedApps.forEach { app ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        selectedApps = if (selectedApps.contains(app.packageName)) {
-                                            selectedApps - app.packageName
-                                        } else {
-                                            selectedApps + app.packageName
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(3),
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(installedApps) { app ->
+                                val isSelected = selectedApps.contains(app.packageName)
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .clickable {
+                                            selectedApps = if (isSelected) {
+                                                selectedApps - app.packageName
+                                            } else {
+                                                selectedApps + app.packageName
+                                            }
+                                        }
+                                        .background(
+                                            if (isSelected) SettingsPrimaryColor.copy(alpha = 0.3f) else Color.Transparent,
+                                            RoundedCornerShape(8.dp)
+                                        )
+                                        .padding(8.dp)
+                                ) {
+                                    Box {
+                                        Image(
+                                            painter = rememberDrawablePainter(app.icon),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(48.dp)
+                                        )
+                                        if (isSelected) {
+                                            Icon(
+                                                Icons.Rounded.CheckCircle,
+                                                contentDescription = null,
+                                                tint = SettingsPrimaryColor,
+                                                modifier = Modifier.align(Alignment.TopEnd).background(Color.White, CircleShape)
+                                            )
                                         }
                                     }
-                                    .padding(vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Checkbox(
-                                    checked = selectedApps.contains(app.packageName),
-                                    onCheckedChange = null, // Handled by row click, but just in case
-                                    colors = CheckboxDefaults.colors(checkedColor = SettingsPrimaryColor)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Image(
-                                    painter = rememberDrawablePainter(app.icon),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(32.dp)
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Text(app.name, fontSize = 14.sp, color = SettingsTextColor)
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = app.name,
+                                        color = Color.White,
+                                        fontSize = 12.sp,
+                                        textAlign = TextAlign.Center,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
                             }
-                            Divider(color = Color.LightGray.copy(alpha = 0.2f))
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(onClick = { showAppSelectionDialog = false }) {
+                            Text("취소", color = Color.White.copy(alpha = 0.7f))
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = {
+                                prefs.saveHomeApps(selectedApps.toList())
+                                showAppSelectionDialog = false
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = SettingsPrimaryColor)
+                        ) {
+                            Text("저장 (${selectedApps.size}개)", color = Color.White)
                         }
                     }
                 }
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    prefs.saveHomeApps(selectedApps.toList())
-                    showAppSelectionDialog = false
-                }) {
-                    Text("저장 (${selectedApps.size}개)")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showAppSelectionDialog = false }) {
-                    Text("취소")
-                }
             }
-        )
+        }
     }
 
     Scaffold(
@@ -200,6 +258,55 @@ fun SettingsScreen(onBack: () -> Unit) {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
+            // 0. 내 정보 설정 (New)
+            SettingsCard(title = "👤 내 정보 설정") {
+                SettingInputItem(
+                    title = "내 이름 (표시용)",
+                    value = userName,
+                    onValueChange = { 
+                        userName = it
+                        prefs.saveUserName(it)
+                    },
+                    placeholder = "이름을 입력하세요 (예: 김망고)"
+                )
+                SettingSwitchItem(
+                    title = "홈 화면에 이름 표시",
+                    description = "홈 화면 상단에 이름을 표시합니다.",
+                    checked = showUserName,
+                    onCheckedChange = { 
+                        showUserName = it
+                        prefs.setUserNameVisible(it)
+                    }
+                )
+                Divider(color = Color.LightGray.copy(alpha = 0.3f))
+                SettingInputItem(
+                    title = "내 전화번호 (표시용)",
+                    value = userPhoneNumber,
+                    onValueChange = { 
+                        userPhoneNumber = it
+                        prefs.saveUserPhoneNumber(it)
+                    },
+                    placeholder = "전화번호를 입력하세요"
+                )
+                SettingSwitchItem(
+                    title = "홈 화면에 전화번호 표시",
+                    description = "홈 화면 상단에 전화번호를 표시합니다.",
+                    checked = showUserPhoneNumber,
+                    onCheckedChange = { 
+                        showUserPhoneNumber = it
+                        prefs.setUserPhoneNumberVisible(it)
+                    }
+                )
+                if (!showUserName && !showUserPhoneNumber) {
+                     Text(
+                        text = "💡 이름과 전화번호를 모두 숨기면 날씨 인사말이 표시됩니다.",
+                        color = SettingsPrimaryColor,
+                        fontSize = 13.sp,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
+
             // 1. 화면 및 소리
             SettingsCard(title = "📱 화면 및 소리") {
                 SettingSwitchItem(
@@ -226,7 +333,7 @@ fun SettingsScreen(onBack: () -> Unit) {
             // 2. 홈 화면 구성
             SettingsCard(title = "🏠 홈 화면 구성") {
                 SettingTextItem(
-                    title = "홈 화면 앱 편집",
+                    title = "홈 화면 앱추가",
                     description = "${selectedApps.size}개의 앱이 선택됨",
                     onClick = { showAppSelectionDialog = true }
                 )

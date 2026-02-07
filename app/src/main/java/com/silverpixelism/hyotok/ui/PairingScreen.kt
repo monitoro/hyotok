@@ -114,62 +114,29 @@ fun PairingScreen(
                 Text("새 코드 생성")
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
-            Divider()
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Child Section
-            if (!isChildConnected) {
-                OutlinedTextField(
-                    value = inputCode,
-                    onValueChange = { inputCode = it },
-                    label = { Text("상대방 코드 입력") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = {
-                        Toast.makeText(context, "1. 버튼 클릭됨", Toast.LENGTH_SHORT).show()
-                        if (inputCode.isNotEmpty()) {
-                            usersRef.child(inputCode).setValue("connected")
-                                .addOnSuccessListener { 
-                                    Toast.makeText(context, "2. Firebase 성공! 화면 이동 시도", Toast.LENGTH_LONG).show()
-                                    statusMessage = "연결되었습니다!"
-                                    isChildConnected = true
-                                    onSaveCode(inputCode)
-                                    onChildConnected(inputCode)
-                                }
-                                .addOnFailureListener { 
-                                    Toast.makeText(context, "Firebase 실패: ${it.message}", Toast.LENGTH_LONG).show()
-                                    statusMessage = "연결 실패: ${it.message}" 
-                                }
-                        } else {
-                            Toast.makeText(context, "코드를 입력하세요", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("코드 연결 (자녀용)")
-                }
-            } else {
-                Text("현재 연결되어 있습니다.", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+            if (pairingCode.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = {
-                        if (inputCode.isNotEmpty()) {
-                            usersRef.child(inputCode).setValue("disconnected") // Or remove check
-                                .addOnSuccessListener {
-                                    statusMessage = "연결이 해제되었습니다."
-                                    isChildConnected = false
-                                }
+                        val shareIntent = android.content.Intent().apply {
+                            action = android.content.Intent.ACTION_SEND
+                            putExtra(android.content.Intent.EXTRA_TEXT, "효도폰 연결 코드: [$pairingCode] \n\n이 코드를 자녀 앱에 입력해주세요.")
+                            type = "text/plain"
                         }
+                        context.startActivity(android.content.Intent.createChooser(shareIntent, "코드 공유하기"))
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = androidx.compose.ui.graphics.Color(0xFFFAE300), // Kakao Yellow like
+                        contentColor = androidx.compose.ui.graphics.Color.Black
+                    )
                 ) {
-                    Text("연결 끊기")
+                    Text("카카오톡/문자로 코드 보내기")
                 }
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             if (statusMessage.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))

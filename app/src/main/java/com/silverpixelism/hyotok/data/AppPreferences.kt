@@ -6,6 +6,42 @@ import android.content.SharedPreferences
 class AppPreferences(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("hyotok_prefs", Context.MODE_PRIVATE)
 
+    // 사용자 이름
+    fun getUserName(): String {
+        return prefs.getString("user_name", "") ?: ""
+    }
+
+    fun saveUserName(name: String) {
+        prefs.edit().putString("user_name", name).apply()
+    }
+
+    // 사용자 전화번호
+    fun getUserPhoneNumber(): String {
+        return prefs.getString("user_phone_number", "") ?: ""
+    }
+
+    fun saveUserPhoneNumber(number: String) {
+        prefs.edit().putString("user_phone_number", number).apply()
+    }
+
+    // 이름 표시 여부
+    fun isUserNameVisible(): Boolean {
+        return prefs.getBoolean("show_user_name", false) // 기본값 false로 시작
+    }
+
+    fun setUserNameVisible(visible: Boolean) {
+        prefs.edit().putBoolean("show_user_name", visible).apply()
+    }
+
+    // 전화번호 표시 여부
+    fun isUserPhoneNumberVisible(): Boolean {
+        return prefs.getBoolean("show_user_phone", false) // 기본값 false로 시작
+    }
+
+    fun setUserPhoneNumberVisible(visible: Boolean) {
+        prefs.edit().putBoolean("show_user_phone", visible).apply()
+    }
+
     fun getSelectedApps(): Set<String> {
         return prefs.getStringSet("selected_apps", emptySet()) ?: emptySet()
     }

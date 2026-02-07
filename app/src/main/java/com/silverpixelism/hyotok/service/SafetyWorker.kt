@@ -47,7 +47,7 @@ class SafetyWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         
         if (androidx.core.content.ContextCompat.checkSelfPermission(
                 context,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
+                android.Manifest.permission.ACCESS_FINE_LOCATION
             ) == android.content.pm.PackageManager.PERMISSION_GRANTED
         ) {
             try {
@@ -61,7 +61,7 @@ class SafetyWorker(context: Context, params: WorkerParameters) : CoroutineWorker
                     // If no last location, request current location (high accuracy for freshness, but coarse perm limits it)
                     val cancellationTokenSource = CancellationTokenSource()
                     val currentLocation = fusedLocationClient.getCurrentLocation(
-                        Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+                        Priority.PRIORITY_HIGH_ACCURACY,
                         cancellationTokenSource.token
                     ).await()
                     

@@ -22,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator // Add import
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -119,8 +120,13 @@ fun GuardianHomeScreen() {
                 // Disconnect button only
                 androidx.compose.material3.TextButton(
                     onClick = {
+                        // Reset Connection
+                        val database = com.google.firebase.database.FirebaseDatabase.getInstance()
+                        database.getReference("users").child(pairingCode).setValue("disconnected")
+                        
                         signalingClient.value?.sendDisconnect()
                         signalingClient.value?.cleanup()
+                        signalingClient.value = null // Nullify
                         isConnected = false
                     }
                 ) {
@@ -212,23 +218,24 @@ fun GuardianHomeScreen() {
                         .fillMaxWidth()
                         .padding(top = 16.dp)
                 ) {
-                    // Safety Status Card (Only if data exists)
-                    if (batteryLevel != -1) {
-                         Text(
-                            text = "부모님 현재 상태",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = androidx.compose.ui.graphics.Color(0xFF63B3ED), // Light Blue
-                            modifier = Modifier.padding(bottom = 12.dp)
-                        )
-                        
-                        androidx.compose.material3.Card(
-                            colors = androidx.compose.material3.CardDefaults.cardColors(
-                                containerColor = androidx.compose.ui.graphics.Color(0xFF2D3748)
-                            ),
-                            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
+                    // Safety Status Card - Always visible (shows waiting state if no data)
+                     Text(
+                        text = "부모님 현재 상태 (Beta)",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = androidx.compose.ui.graphics.Color(0xFF63B3ED), // Light Blue
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    
+                    androidx.compose.material3.Card(
+                        colors = androidx.compose.material3.CardDefaults.cardColors(
+                            containerColor = androidx.compose.ui.graphics.Color(0xFF2D3748)
+                        ),
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            if (batteryLevel != -1) {
+                                // Data Available
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
                                         imageVector = if (isCharging) Icons.Default.BatteryChargingFull else Icons.Default.BatteryStd,
@@ -266,7 +273,6 @@ fun GuardianHomeScreen() {
                                                 if (mapIntent.resolveActivity(context.packageManager) != null) {
                                                     context.startActivity(mapIntent)
                                                 } else {
-                                                    // Fallback if maps app not installed
                                                     context.startActivity(Intent(Intent.ACTION_VIEW, uri))
                                                 }
                                             }
@@ -292,6 +298,29 @@ fun GuardianHomeScreen() {
                                     style = MaterialTheme.typography.bodySmall,
                                     color = androidx.compose.ui.graphics.Color.Gray
                                 )
+                            } else {
+                                // Waiting for Data
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+                                ) {
+                                    androidx.compose.material3.CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        color = androidx.compose.ui.graphics.Color(0xFFA5B4FC),
+                                        strokeWidth = 2.dp
+                                    )
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Text(
+                                        text = "부모님 상태 수신 대기 중...",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = androidx.compose.ui.graphics.Color.Gray
+                                    )
+                                    Text(
+                                        text = "(최대 15분 소요될 수 있습니다)",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = androidx.compose.ui.graphics.Color.DarkGray
+                                    )
+                                }
                             }
                         }
                     }

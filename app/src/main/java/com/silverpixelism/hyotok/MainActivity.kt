@@ -92,6 +92,12 @@ class MainActivity : ComponentActivity() {
         startMediaProjection.launch(mediaProjectionManager.createScreenCaptureIntent())
     }
 
+    private val requestLocationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        // Permission result handled automatically by SafetyWorker on next run
+    }
+
     private fun checkAndRequestOverlayPermission() {
         if (!android.provider.Settings.canDrawOverlays(this)) {
             val intent = Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -103,6 +109,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         checkAndRequestOverlayPermission()
+        
+        // Request Location Permission for Safety Features
+        if (androidx.core.content.ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) != android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) {
+            requestLocationPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+        }
 
         // Safety Worker (Every 15 minutes)
         val safetyRequest = PeriodicWorkRequestBuilder<SafetyWorker>(15, TimeUnit.MINUTES).build()
