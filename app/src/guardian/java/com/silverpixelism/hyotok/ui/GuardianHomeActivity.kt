@@ -40,26 +40,76 @@ import com.silverpixelism.hyotok.webrtc.SignalingClient
 import com.silverpixelism.hyotok.webrtc.WebRTCClient
 import org.webrtc.SurfaceViewRenderer
 import com.silverpixelism.hyotok.ui.theme.HyoTalkTheme
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.AdError
 
 class GuardianHomeActivity : ComponentActivity() {
 
+    private var mInterstitialAd: InterstitialAd? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Initialize AdMob
+        com.google.android.gms.ads.MobileAds.initialize(this) {}
+        loadInterstitialAd()
+        
         setContent {
             HyoTalkTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GuardianHomeScreen()
+                    GuardianHomeScreen(
+                        onShowAd = { showInterstitialAd() }
+                    )
                 }
             }
+        }
+    }
+
+
+    private fun loadInterstitialAd() {
+        val adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(this, "ca-app-pub-3735520183312870/2787873762", adRequest, object : InterstitialAdLoadCallback() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                mInterstitialAd = null
+            }
+
+            override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                mInterstitialAd = interstitialAd
+                
+                mInterstitialAd?.fullScreenContentCallback = object: FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() {
+                        mInterstitialAd = null
+                        loadInterstitialAd() // Reload for next time
+                    }
+
+                    override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                        mInterstitialAd = null
+                    }
+                }
+            }
+        })
+    }
+
+    fun showInterstitialAd() {
+        if (mInterstitialAd != null) {
+            mInterstitialAd?.show(this)
+        } else {
+            // Ad not ready, reload
+            loadInterstitialAd()
         }
     }
 }
 
 @Composable
-fun GuardianHomeScreen() {
+fun GuardianHomeScreen(onShowAd: () -> Unit) {
     val context = androidx.compose.ui.platform.LocalContext.current
     // Load saved pairing code
     val prefs = remember { com.silverpixelism.hyotok.data.AppPreferences(context) }
@@ -128,6 +178,9 @@ fun GuardianHomeScreen() {
                         signalingClient.value?.cleanup()
                         signalingClient.value = null // Nullify
                         isConnected = false
+                        
+                        // Show Interstitial Ad on disconnect
+                        onShowAd()
                     }
                 ) {
                     Text("연결 끊기", color = androidx.compose.ui.graphics.Color.Red)
@@ -211,10 +264,10 @@ fun GuardianHomeScreen() {
                     thickness = 1.dp
                 )
                 
-                // 2. Info & Tutorial Section (Weight 0.65) - Bottom Area
+                // 2. Info & Tutorial Section (Weight 0.55) - Middle Area
                 Column(
                     modifier = Modifier
-                        .weight(0.65f)
+                        .weight(0.55f)
                         .fillMaxWidth()
                         .padding(top = 16.dp)
                 ) {
@@ -365,6 +418,17 @@ fun GuardianHomeScreen() {
                             )
                         }
                     }
+                }
+
+                
+                // 3. AdMob Banner (Weight 0.1) - Bottom Area
+                androidx.compose.foundation.layout.Box(
+                    modifier = Modifier
+                        .weight(0.1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    AdMobBanner()
                 }
             }
         } else {

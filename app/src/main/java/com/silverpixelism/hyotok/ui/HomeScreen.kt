@@ -55,10 +55,7 @@ import com.silverpixelism.hyotok.data.AppRepository
 import com.silverpixelism.hyotok.data.ContactInfo
 
 @Composable
-fun ClockWidget(
-    weatherInfo: Pair<String, String>?,
-    weatherIcon: String
-) {
+fun ClockWidget() {
     val context = LocalContext.current
     var currentTime by remember { mutableStateOf(System.currentTimeMillis()) }
     
@@ -71,12 +68,12 @@ fun ClockWidget(
     }
     
     val timeFormat = SimpleDateFormat("a h:mm", Locale.KOREAN)
-    val dateFormat = SimpleDateFormat("yyyy년 M월 d일 EEEE", Locale.KOREAN) // Added Year
+    val dateFormat = SimpleDateFormat("yyyy년 M월 d일 EEEE", Locale.KOREAN)
     
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight() // Allow height to expand
+            .wrapContentHeight()
             .shadow(8.dp, RoundedCornerShape(32.dp))
             .clip(RoundedCornerShape(32.dp))
             .background(
@@ -84,49 +81,22 @@ fun ClockWidget(
                     colors = listOf(Color(0xFF6C5CE7), Color(0xFFA29BFE))
                 )
             )
-            .padding(vertical = 24.dp, horizontal = 20.dp), // Increased vertical padding
+            .padding(vertical = 24.dp, horizontal = 20.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = timeFormat.format(Date(currentTime)),
-                fontSize = 42.sp, // Reduced font size (48 -> 42)
+                fontSize = 42.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = dateFormat.format(Date(currentTime)),
-                fontSize = 14.sp, // Reduced font size (16 -> 14)
+                fontSize = 14.sp,
                 color = Color.White.copy(alpha = 0.9f)
             )
-            Spacer(modifier = Modifier.height(16.dp)) // Increased spacer for separation
-            
-            // Weather Info
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = weatherIcon, fontSize = 24.sp)
-                Spacer(modifier = Modifier.width(8.dp))
-                if (weatherInfo != null) {
-                    Text(
-                        text = "${weatherInfo.first} ${weatherInfo.second}",
-                        fontSize = 16.sp, // 18 -> 16
-                        color = Color.White.copy(alpha = 0.95f),
-                        fontWeight = FontWeight.Medium,
-                        maxLines = 1,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                    )
-                } else {
-                    Text(
-                        text = "날씨 불러오는 중...", // More descriptive
-                        fontSize = 14.sp,
-                        color = Color.White.copy(alpha = 0.8f)
-                    )
-                }
-            }
         }
     }
 }
@@ -156,6 +126,7 @@ val ColorFamily = Color(0xFFFF9F43) // Orange
 data class HomeGridItem(
     val title: String,
     val icon: ImageVector? = null,
+    val iconDrawable: Int? = null, // Added for custom drawable resources
     val backgroundColor: Color,
     val contentColor: Color,
     val packageName: String? = null,
@@ -194,69 +165,21 @@ fun HomeScreen(
     var favoriteContacts by remember { mutableStateOf<List<ContactInfo>>(emptyList()) }
     
     val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
-
-    // Weather State (Unified)
-    var weatherInfo by remember { mutableStateOf<Pair<String, String>?>(null) }
-    var weatherIcon by remember { mutableStateOf("❓") }
-    var weatherGreeting by remember { mutableStateOf("즐거운 하루 보내세요! 😊") }
     
-    // Fetch Weather Logic
-    val fetchWeather = remember {
-        {
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                LocationServices.getFusedLocationProviderClient(context).lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
-                            try {
-                                val weather = WeatherRepository.getCurrentWeather(location.latitude, location.longitude)
-                                withContext(Dispatchers.Main) {
-                                    if (weather != null) {
-                                        val (desc, icon) = WeatherRepository.getWeatherInfo(weather.weatherCode)
-                                        weatherIcon = icon
-                                        weatherInfo = desc to "${weather.temperature}°C"
-                                        
-                                        // Update Greeting based on weather
-                                        weatherGreeting = when {
-                                            weather.weatherCode == 0 -> "맑은 날씨입니다. 산책 어떠세요? ☀️"
-                                            weather.weatherCode in 1..3 -> "구름이 조금 있네요. 편안한 하루 보내세요! ⛅"
-                                            weather.weatherCode in 51..67 || weather.weatherCode in 80..82 -> "비 소식이 있어요. 우산 챙기세요! ☔"
-                                            weather.weatherCode in 71..77 || weather.weatherCode in 85..86 -> "눈이 오네요. 미끄럼 조심하세요! ❄️"
-                                            weather.temperature < 0 -> "날씨가 많이 춥습니다. 따뜻하게 입으세요! 🧣"
-                                            weather.temperature > 30 -> "무더운 날씨입니다. 물 자주 드세요! 💧"
-                                            else -> "오늘도 기분 좋은 하루 되세요! 🍀"
-                                        }
-                                    }
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     LaunchedEffect(Unit) {
         try {
             favoriteContacts = repository.getFavoriteContacts()
         } catch (e: Exception) {
             // Permission might not be granted yet
         }
-        fetchWeather()
     }
     
-    // Refresh contacts & Weather periodically or on resume logic conceptually
+    // Refresh contacts periodically or on resume logic conceptually
     DisposableEffect(lifecycleOwner) {
         val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
             if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
                 try {
                      favoriteContacts = repository.getFavoriteContacts()
-                     fetchWeather() // Refresh Weather on Resume
                 } catch(e: Exception) {}
             }
         }
@@ -276,14 +199,14 @@ fun HomeScreen(
     ) {
         // 1. Header Section
         item {
-            HeaderSection(onNavigateToSettings, weatherGreeting)
+            HeaderSection(onNavigateToSettings, "즐거운 하루 보내세요! 😊")
         }
         
         // 2. Search Section Removed
         
         // 3. Clock Widget
         item {
-            ClockWidget(weatherInfo, weatherIcon)
+            ClockWidget()
         }
         
         // 4. Favorites (Horizontal Scroll)
@@ -541,13 +464,13 @@ fun BasicAppsGrid(context: android.content.Context) {
     val apps = mutableListOf<HomeGridItem>()
 
     // 1. Phone
-    apps.add(HomeGridItem("전화", Icons.Rounded.Call, ColorPhone, Color.White, null) {
+    apps.add(HomeGridItem("전화", null, com.silverpixelism.hyotok.R.drawable.ic_app_phone, ColorPhone, Color.White, null) {
         performHaptic()
         context.startActivity(Intent(Intent.ACTION_DIAL))
     })
 
     // 2. Messages
-    apps.add(HomeGridItem("메세지", Icons.Rounded.Email, ColorMessage, Color.White, null) {
+    apps.add(HomeGridItem("메세지", null, com.silverpixelism.hyotok.R.drawable.ic_app_message, ColorMessage, Color.White, null) {
         performHaptic()
         try {
             val intent = Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_APP_MESSAGING) }
@@ -557,20 +480,20 @@ fun BasicAppsGrid(context: android.content.Context) {
         }
     })
 
-    // 3. Family Phone (Address Book Group)
-    apps.add(HomeGridItem("가족전화", Icons.Rounded.Star, ColorFamily, Color.White, null) {
+    // 3. Contacts (Was Family Phone) - Changed Title & Icon
+    apps.add(HomeGridItem("연락처", null, com.silverpixelism.hyotok.R.drawable.ic_app_contacts, ColorFamily, Color.White, null) {
          performHaptic()
          try {
              val intent = Intent(Intent.ACTION_VIEW).apply {
                 data = android.provider.ContactsContract.Contacts.CONTENT_URI
-                putExtra("android.provider.extra.CONTENT_FILTER_TYPE", 1)
+                // putExtra("android.provider.extra.CONTENT_FILTER_TYPE", 1) // Removed filter to show all contacts
              }
              context.startActivity(intent)
         } catch(e: Exception) {}
     })
     
      // 4. KakaoTalk
-    apps.add(HomeGridItem("카카오톡", Icons.Rounded.Chat, ColorKakao, Color.Black, "com.kakao.talk") {
+    apps.add(HomeGridItem("카카오톡", null, com.silverpixelism.hyotok.R.drawable.ic_app_kakao, ColorKakao, Color.Black, "com.kakao.talk") {
         performHaptic()
         try {
             val intent = context.packageManager.getLaunchIntentForPackage("com.kakao.talk")
@@ -579,7 +502,7 @@ fun BasicAppsGrid(context: android.content.Context) {
     })
     
     // 5. YouTube
-    apps.add(HomeGridItem("유튜브", Icons.Rounded.PlayArrow, ColorYoutube, Color.White, "com.google.android.youtube") {
+    apps.add(HomeGridItem("유튜브", null, com.silverpixelism.hyotok.R.drawable.ic_app_youtube, ColorYoutube, Color.White, "com.google.android.youtube") {
         performHaptic()
         try {
             val intent = context.packageManager.getLaunchIntentForPackage("com.google.android.youtube")
@@ -587,8 +510,8 @@ fun BasicAppsGrid(context: android.content.Context) {
         } catch(e: Exception) {}
     })
     
-    // 6. Voice AI
-    apps.add(HomeGridItem("음성AI", Icons.Rounded.Mic, Color(0xFF6C5CE7), Color.White, null) {
+    // 6. Voice AI (Keep Vector Icon)
+    apps.add(HomeGridItem("음성AI", null, com.silverpixelism.hyotok.R.drawable.ic_app_ai, Color(0xFF6C5CE7), Color.White, null) {
         performHaptic()
         try {
             // Try launching Google Assistant
@@ -730,6 +653,7 @@ fun AppIconCard(item: HomeGridItem, modifier: Modifier = Modifier) {
                 .clickable { item.onClick() },
             contentAlignment = Alignment.Center
         ) {
+            // Priority: 1. Package Icon (Dynamic) -> 2. Custom Drawable -> 3. Vector Icon
             if (item.packageName != null) {
                  val context = LocalContext.current
                  val pm = context.packageManager
@@ -747,22 +671,43 @@ fun AppIconCard(item: HomeGridItem, modifier: Modifier = Modifier) {
 
                  if (appIcon != null) {
                      Image(
-                        painter = com.google.accompanist.drawablepainter.rememberDrawablePainter(appIcon!!),
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp)
+                         painter = com.google.accompanist.drawablepainter.rememberDrawablePainter(drawable = appIcon!!),
+                         contentDescription = item.title,
+                         modifier = Modifier.fillMaxSize().padding(12.dp)
                      )
-                 } else {
-                     Icon(Icons.Rounded.Android, contentDescription = null, tint = item.contentColor)
+
+                 } else if (item.iconDrawable != null) {
+                     Image(
+                         painter = androidx.compose.ui.res.painterResource(id = item.iconDrawable),
+                         contentDescription = item.title,
+                         modifier = Modifier.fillMaxSize().padding(4.dp)
+                     )
+                 } else if (item.icon != null) {
+                     Icon(
+                         imageVector = item.icon,
+                         contentDescription = item.title,
+                         tint = item.contentColor,
+                         modifier = Modifier.size(32.dp)
+                     )
                  }
-            } else {
+            } else if (item.iconDrawable != null) {
+                 Image(
+                     painter = androidx.compose.ui.res.painterResource(id = item.iconDrawable),
+                     contentDescription = item.title,
+                     modifier = Modifier.fillMaxSize().padding(4.dp)
+                 )
+            } else if (item.icon != null) {
                 Icon(
-                    imageVector = item.icon ?: Icons.Rounded.Info,
-                    contentDescription = null,
+                    imageVector = item.icon,
+                    contentDescription = item.title,
                     tint = item.contentColor,
                     modifier = Modifier.size(32.dp)
                 )
             }
         }
+
+
+
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = item.title,

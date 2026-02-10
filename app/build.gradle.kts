@@ -9,14 +9,14 @@ import java.io.FileInputStream
 
 android {
     namespace = "com.silverpixelism.hyotok"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.silverpixelism.hyotok"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 35
+        versionCode = 3
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -31,16 +31,16 @@ android {
             // Default applicationId
             resValue("string", "app_name", "효도폰")
             // Parent App Version
-            versionCode = 1
-            versionName = "1.0.0"
+            versionCode = 5
+            versionName = "1.0.4"
         }
         create("guardian") {
             dimension = "mode"
             applicationIdSuffix = ".guardian"
             resValue("string", "app_name", "효도폰(지원)")
             // Guardian App Version
-            versionCode = 1
-            versionName = "1.0.0"
+            versionCode = 5
+            versionName = "1.0.4"
         }
     }
 
@@ -131,6 +131,9 @@ dependencies {
 
     // Location
     implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    // AdMob
+    "guardianImplementation"("com.google.android.gms:play-services-ads:23.0.0")
 
     // Coil for Image Loading
     implementation("io.coil-kt:coil-compose:2.5.0")
