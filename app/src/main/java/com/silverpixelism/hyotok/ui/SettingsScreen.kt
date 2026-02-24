@@ -23,6 +23,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -258,39 +259,39 @@ fun SettingsScreen(onBack: () -> Unit) {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // 0. 내 정보 설정 (New)
-            SettingsCard(title = "👤 내 정보 설정") {
-                SettingInputItem(
+            // 0. 내 정보 설정 (New) - 컴팩트형 다크 테마 반영
+            DarkSettingsCard(title = "👤 내 정보 설정") {
+                DarkSettingInputItem(
                     title = "내 이름 (표시용)",
                     value = userName,
                     onValueChange = { 
                         userName = it
                         prefs.saveUserName(it)
                     },
-                    placeholder = "이름을 입력하세요 (예: 김망고)"
+                    placeholder = "예: 김망고"
                 )
-                SettingSwitchItem(
+                DarkSettingSwitchItem(
                     title = "홈 화면에 이름 표시",
-                    description = "홈 화면 상단에 이름을 표시합니다.",
+                    description = "상단 인사말에 이름을 보여줍니다.",
                     checked = showUserName,
                     onCheckedChange = { 
                         showUserName = it
                         prefs.setUserNameVisible(it)
                     }
                 )
-                Divider(color = Color.LightGray.copy(alpha = 0.3f))
-                SettingInputItem(
-                    title = "내 전화번호 (표시용)",
+                Divider(color = Color.DarkGray, modifier = Modifier.padding(horizontal = 12.dp))
+                DarkSettingInputItem(
+                    title = "내 전화번호",
                     value = userPhoneNumber,
                     onValueChange = { 
                         userPhoneNumber = it
                         prefs.saveUserPhoneNumber(it)
                     },
-                    placeholder = "전화번호를 입력하세요"
+                    placeholder = "전화번호 입력"
                 )
-                SettingSwitchItem(
-                    title = "홈 화면에 전화번호 표시",
-                    description = "홈 화면 상단에 전화번호를 표시합니다.",
+                DarkSettingSwitchItem(
+                    title = "홈 화면에 번호 표시",
+                    description = "상단 인사말에 번호를 보여줍니다.",
                     checked = showUserPhoneNumber,
                     onCheckedChange = { 
                         showUserPhoneNumber = it
@@ -299,10 +300,10 @@ fun SettingsScreen(onBack: () -> Unit) {
                 )
                 if (!showUserName && !showUserPhoneNumber) {
                      Text(
-                        text = "💡 이름과 전화번호를 모두 숨기면 날씨 인사말이 표시됩니다.",
-                        color = SettingsPrimaryColor,
-                        fontSize = 13.sp,
-                        modifier = Modifier.padding(16.dp)
+                        text = "💡 설정이 비활성화되면 날씨 인사말만 나타납니다.",
+                        color = Color(0xFFA5B4FC), // Light Indigo
+                        fontSize = 11.sp,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                     )
                 }
             }
@@ -520,5 +521,91 @@ fun SettingTextItem(title: String, description: String, onClick: () -> Unit) {
             Spacer(modifier = Modifier.height(2.dp))
             Text(description, color = Color.Gray, fontSize = 13.sp)
         }
+    }
+}
+
+@Composable
+fun DarkSettingsCard(title: String, content: @Composable ColumnScope.() -> Unit) {
+    Column {
+        Text(
+            text = title,
+            color = SettingsTextColor,
+            fontWeight = FontWeight.Bold,
+            fontSize = 14.sp,
+            modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
+        )
+        Card(
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF2D3436)),
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                content()
+            }
+        }
+    }
+}
+
+@Composable
+fun DarkSettingInputItem(
+    title: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String
+) {
+    Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
+        Text(title, fontWeight = FontWeight.Medium, color = Color.White, fontSize = 13.sp)
+        Spacer(modifier = Modifier.height(4.dp))
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = { Text(placeholder, fontSize = 12.sp, color = Color.Gray) },
+            modifier = Modifier.fillMaxWidth().height(52.dp),
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = SettingsPrimaryColor,
+                unfocusedBorderColor = Color.DarkGray,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
+            ),
+            shape = RoundedCornerShape(8.dp),
+            textStyle = androidx.compose.ui.text.TextStyle(fontSize = 13.sp)
+        )
+    }
+}
+
+@Composable
+fun DarkSettingSwitchItem(
+    title: String,
+    description: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCheckedChange(!checked) }
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, fontWeight = FontWeight.Medium, color = Color.White, fontSize = 13.sp)
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(description, color = Color.LightGray, fontSize = 11.sp, lineHeight = 14.sp)
+        }
+        Switch(
+            checked = checked,
+            onCheckedChange = null,
+            modifier = Modifier.scale(0.85f),
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = SettingsPrimaryColor,
+                checkedTrackColor = SettingsPrimaryColor.copy(alpha = 0.5f),
+                uncheckedThumbColor = Color.LightGray,
+                uncheckedTrackColor = Color.DarkGray
+            )
+        )
     }
 }

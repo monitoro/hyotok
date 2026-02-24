@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.size // Add size import
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -40,23 +41,17 @@ import com.silverpixelism.hyotok.webrtc.SignalingClient
 import com.silverpixelism.hyotok.webrtc.WebRTCClient
 import org.webrtc.SurfaceViewRenderer
 import com.silverpixelism.hyotok.ui.theme.HyoTalkTheme
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.AdError
+// Imports for AdMob Interstitial Ad removed
 
 class GuardianHomeActivity : ComponentActivity() {
 
-    private var mInterstitialAd: InterstitialAd? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
         // Initialize AdMob
         com.google.android.gms.ads.MobileAds.initialize(this) {}
-        loadInterstitialAd()
         
         setContent {
             HyoTalkTheme {
@@ -64,52 +59,18 @@ class GuardianHomeActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GuardianHomeScreen(
-                        onShowAd = { showInterstitialAd() }
-                    )
+                    GuardianHomeScreen()
                 }
             }
         }
     }
 
 
-    private fun loadInterstitialAd() {
-        val adRequest = AdRequest.Builder().build()
 
-        InterstitialAd.load(this, "ca-app-pub-3735520183312870/2787873762", adRequest, object : InterstitialAdLoadCallback() {
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-                mInterstitialAd = null
-            }
-
-            override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                mInterstitialAd = interstitialAd
-                
-                mInterstitialAd?.fullScreenContentCallback = object: FullScreenContentCallback() {
-                    override fun onAdDismissedFullScreenContent() {
-                        mInterstitialAd = null
-                        loadInterstitialAd() // Reload for next time
-                    }
-
-                    override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                        mInterstitialAd = null
-                    }
-                }
-            }
-        })
-    }
-
-    fun showInterstitialAd() {
-        if (mInterstitialAd != null) {
-            mInterstitialAd?.show(this)
-        } else {
-            // Ad not ready, reload
-            loadInterstitialAd()
-        }
-    }
 }
 
 @Composable
-fun GuardianHomeScreen(onShowAd: () -> Unit) {
+fun GuardianHomeScreen() {
     val context = androidx.compose.ui.platform.LocalContext.current
     // Load saved pairing code
     val prefs = remember { com.silverpixelism.hyotok.data.AppPreferences(context) }
@@ -149,7 +110,10 @@ fun GuardianHomeScreen(onShowAd: () -> Unit) {
     val backgroundColor = androidx.compose.ui.graphics.Color(0xFF1A1F36)
     
     Column(
-        modifier = Modifier.fillMaxSize().background(backgroundColor)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor)
+            .statusBarsPadding()
     ) {
         // Header - Always visible
         Row(
@@ -179,8 +143,8 @@ fun GuardianHomeScreen(onShowAd: () -> Unit) {
                         signalingClient.value = null // Nullify
                         isConnected = false
                         
-                        // Show Interstitial Ad on disconnect
-                        onShowAd()
+                        
+                        // Interstitial Ad removed on disconnect
                     }
                 ) {
                     Text("연결 끊기", color = androidx.compose.ui.graphics.Color.Red)

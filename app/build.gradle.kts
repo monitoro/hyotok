@@ -31,16 +31,16 @@ android {
             // Default applicationId
             resValue("string", "app_name", "효도폰")
             // Parent App Version
-            versionCode = 5
-            versionName = "1.0.4"
+            versionCode = 6
+            versionName = "1.0.5"
         }
         create("guardian") {
             dimension = "mode"
             applicationIdSuffix = ".guardian"
             resValue("string", "app_name", "효도폰(지원)")
             // Guardian App Version
-            versionCode = 5
-            versionName = "1.0.4"
+            versionCode = 6
+            versionName = "1.0.5"
         }
     }
 

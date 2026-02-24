@@ -3,15 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application>
+        <!-- AdMob App ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3735520183312870~5370648960"/>
+
         <activity
             android:name="com.silverpixelism.hyotok.ui.GuardianHomeActivity"
             android:exported="true"
             android:theme="@style/Theme.HyoTalk">
-            
-            <!-- AdMob App ID -->
-            <meta-data
-                android:name="com.google.android.gms.ads.APPLICATION_ID"
-                android:value="ca-app-pub-3735520183312870~5370648960"/>
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
