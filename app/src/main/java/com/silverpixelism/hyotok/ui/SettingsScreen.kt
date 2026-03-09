@@ -11,11 +11,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -68,8 +71,12 @@ fun SettingsScreen(onBack: () -> Unit) {
     var installedApps by remember { mutableStateOf(emptyList<AppInfo>()) }
     var selectedApps by remember { mutableStateOf(prefs.getHomeApps().toSet()) }
 
-    LaunchedEffect(showAppSelectionDialog) {
-        if (showAppSelectionDialog && installedApps.isEmpty()) {
+    // Favorite Apps Selection (Top 6 apps)
+    var showFavoriteAppsDialog by remember { mutableStateOf(false) }
+    var favoriteApps by remember { mutableStateOf(prefs.getFavoriteApps()) }
+
+    LaunchedEffect(showAppSelectionDialog, showFavoriteAppsDialog) {
+        if ((showAppSelectionDialog || showFavoriteAppsDialog) && installedApps.isEmpty()) {
             installedApps = withContext(Dispatchers.IO) {
                 appRepository.getInstalledApps()
             }
@@ -126,12 +133,268 @@ fun SettingsScreen(onBack: () -> Unit) {
             }
         )
     }
+    // Favorite Apps Edit Dialog
+    if (showFavoriteAppsDialog) {
+        Dialog(onDismissRequest = { showFavoriteAppsDialog = false }) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF2D3436)),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(600.dp)
+                    .padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "즐겨찾기 6개 메뉴 변경",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = "홈 화면 상단의 6개 아이콘을 변경합니다.\n최대 6개까지만 추가 가능합니다.",
+                        color = Color.LightGray,
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
 
-    // App Selection Dialog (Custom Grid UI)
+                    // 1. Current Selected Favorites List
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.5f)
+                            .background(Color.DarkGray, RoundedCornerShape(8.dp))
+                            .padding(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(favoriteApps.size) { index ->
+                            val appKey = favoriteApps[index]
+                            val label = when (appKey) {
+                                "##PHONE##" -> "전화 (기본)"
+                                "##MESSAGE##" -> "메시지 (기본)"
+                                "##CONTACTS##" -> "연락처 (기본)"
+                                "##VOICE_AI##" -> "음성AI (기본)"
+                                else -> installedApps.find { it.packageName == appKey }?.name ?: "알 수 없는 앱 ($appKey)"
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Color(0xFF3B4245), RoundedCornerShape(8.dp))
+                                    .padding(8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "${index + 1}. $label",
+                                    color = Color.White,
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.weight(1f),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+
+                                Row {
+                                    IconButton(
+                                        onClick = {
+                                            if (index > 0) {
+                                                val mList = favoriteApps.toMutableList()
+                                                val temp = mList[index]
+                                                mList[index] = mList[index - 1]
+                                                mList[index - 1] = temp
+                                                favoriteApps = mList
+                                            }
+                                        },
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Icon(Icons.Rounded.KeyboardArrowUp, null, tint = if (index > 0) Color.White else Color.Gray)
+                                    }
+                                    IconButton(
+                                        onClick = {
+                                            if (index < favoriteApps.size - 1) {
+                                                val mList = favoriteApps.toMutableList()
+                                                val temp = mList[index]
+                                                mList[index] = mList[index + 1]
+                                                mList[index + 1] = temp
+                                                favoriteApps = mList
+                                            }
+                                        },
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Icon(Icons.Rounded.KeyboardArrowDown, null, tint = if (index < favoriteApps.size - 1) Color.White else Color.Gray)
+                                    }
+                                    IconButton(
+                                        onClick = {
+                                            val mList = favoriteApps.toMutableList()
+                                            mList.removeAt(index)
+                                            favoriteApps = mList
+                                        },
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Icon(Icons.Default.Delete, null, tint = Color.Red.copy(alpha = 0.8f))
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("추가할 앱 선택", color = Color.White, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
+
+                    // 2. All Apps List to Add from
+                    if (installedApps.isEmpty()) {
+                        Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(color = Color.White)
+                        }
+                    } else {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(3),
+                            modifier = Modifier.weight(0.5f),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            // Add default special apps manually to the list for selection
+                            val specialApps = listOf(
+                                Pair("##PHONE##", "전화 (기본)"),
+                                Pair("##MESSAGE##", "메시지 (기본)"),
+                                Pair("##CONTACTS##", "연락처 (기본)"),
+                                Pair("##VOICE_AI##", "음성AI (기본)")
+                            )
+
+                            // 1. Special Apps Section
+                            items(specialApps.size) { index ->
+                                val pair = specialApps[index]
+                                val isSelected = favoriteApps.contains(pair.first)
+
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .clickable {
+                                            if (!isSelected && favoriteApps.size < 6) {
+                                                favoriteApps = favoriteApps + pair.first
+                                            }
+                                        }
+                                        .background(
+                                            if (isSelected) SettingsPrimaryColor.copy(alpha = 0.3f) else Color.Transparent,
+                                            RoundedCornerShape(8.dp)
+                                        )
+                                        .padding(8.dp)
+                                ) {
+                                    Box {
+                                        Icon(
+                                            when (pair.first) {
+                                                "##PHONE##" -> Icons.Default.Call
+                                                "##MESSAGE##" -> Icons.Rounded.Chat
+                                                "##CONTACTS##" -> Icons.Rounded.Person
+                                                else -> Icons.Rounded.Mic
+                                            },
+                                            contentDescription = null,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(48.dp).padding(8.dp)
+                                        )
+                                        if (isSelected) {
+                                            Icon(
+                                                Icons.Rounded.CheckCircle,
+                                                null,
+                                                tint = SettingsPrimaryColor,
+                                                modifier = Modifier.align(Alignment.TopEnd).background(Color.White, CircleShape)
+                                            )
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = pair.second,
+                                        color = Color.White,
+                                        fontSize = 12.sp,
+                                        textAlign = TextAlign.Center,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+
+                            // 2. Installed Apps Section
+                            items(installedApps.size) { index ->
+                                val app = installedApps[index]
+                                val isSelected = favoriteApps.contains(app.packageName)
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .clickable {
+                                            if (!isSelected && favoriteApps.size < 6) {
+                                                favoriteApps = favoriteApps + app.packageName
+                                            }
+                                        }
+                                        .background(
+                                            if (isSelected) SettingsPrimaryColor.copy(alpha = 0.3f) else Color.Transparent,
+                                            RoundedCornerShape(8.dp)
+                                        )
+                                        .padding(8.dp)
+                                ) {
+                                    Box {
+                                        Image(
+                                            painter = rememberDrawablePainter(app.icon),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(48.dp)
+                                        )
+                                        if (isSelected) {
+                                            Icon(
+                                                Icons.Rounded.CheckCircle,
+                                                contentDescription = null,
+                                                tint = SettingsPrimaryColor,
+                                                modifier = Modifier.align(Alignment.TopEnd).background(Color.White, CircleShape)
+                                            )
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = app.name,
+                                        color = Color.White,
+                                        fontSize = 12.sp,
+                                        textAlign = TextAlign.Center,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(onClick = { showFavoriteAppsDialog = false }) {
+                            Text("취소", color = Color.White.copy(alpha = 0.7f))
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = {
+                                prefs.saveFavoriteApps(favoriteApps)
+                                showFavoriteAppsDialog = false
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = SettingsPrimaryColor)
+                        ) {
+                            Text("저장", color = Color.White)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // App Selection Dialog (홈화면 앱추가 - 하단 영역)
     if (showAppSelectionDialog) {
         Dialog(onDismissRequest = { showAppSelectionDialog = false }) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF2D3436)), // Dark Background
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF2D3436)),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -147,9 +410,15 @@ fun SettingsScreen(onBack: () -> Unit) {
                         color = Color.White,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = "홈 화면 하단에 표시할 앱을 선택하세요.",
+                        color = Color.LightGray,
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Center,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    
                     if (installedApps.isEmpty()) {
                         Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator(color = Color.White)
@@ -161,7 +430,8 @@ fun SettingsScreen(onBack: () -> Unit) {
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            items(installedApps) { app ->
+                            items(installedApps.size) { index ->
+                                val app = installedApps[index]
                                 val isSelected = selectedApps.contains(app.packageName)
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -207,9 +477,9 @@ fun SettingsScreen(onBack: () -> Unit) {
                             }
                         }
                     }
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
@@ -334,8 +604,17 @@ fun SettingsScreen(onBack: () -> Unit) {
             // 2. 홈 화면 구성
             SettingsCard(title = "🏠 홈 화면 구성") {
                 SettingTextItem(
+                    title = "즐겨찾기 메뉴 6개 변경",
+                    description = "상단 6개 기본 메뉴를 바꾸거나 순서를 편집합니다.",
+                    onClick = {
+                        favoriteApps = prefs.getFavoriteApps()
+                        showFavoriteAppsDialog = true
+                    }
+                )
+                Divider(color = Color.LightGray.copy(alpha = 0.3f))
+                SettingTextItem(
                     title = "홈 화면 앱추가",
-                    description = "${selectedApps.size}개의 앱이 선택됨",
+                    description = "${selectedApps.size}개의 앱이 선택됨 (하단영역)",
                     onClick = { showAppSelectionDialog = true }
                 )
                 Divider(color = Color.LightGray.copy(alpha = 0.3f))
@@ -380,33 +659,18 @@ fun SettingsScreen(onBack: () -> Unit) {
                         fontSize = 14.sp
                     )
                 } else {
-                    childContacts.forEachIndexed { index, contact ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(contact.first, color = SettingsTextColor, fontWeight = FontWeight.Medium)
-                                Text(contact.second, color = Color.Gray, fontSize = 13.sp)
-                            }
-                            IconButton(onClick = {
-                                val updated = childContacts.toMutableList().apply { removeAt(index) }
-                                childContacts = updated
-                                prefs.saveChildContacts(updated)
-                            }) {
-                                Icon(
-                                    Icons.Default.Delete,
-                                    contentDescription = "삭제",
-                                    tint = Color.Red.copy(alpha = 0.7f),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
-                        if (index < childContacts.size - 1) {
-                             Divider(color = Color.LightGray.copy(alpha = 0.3f), modifier = Modifier.padding(horizontal = 16.dp))
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        for ((index, contact) in childContacts.withIndex()) {
+                            ChildContactItem(
+                                contact = contact,
+                                index = index,
+                                showDivider = index < childContacts.size - 1,
+                                onRemove = {
+                                    val updated = childContacts.toMutableList().apply { removeAt(index) }
+                                    childContacts = updated
+                                    prefs.saveChildContacts(updated)
+                                }
+                            )
                         }
                     }
                 }
@@ -424,6 +688,35 @@ fun SettingsScreen(onBack: () -> Unit) {
             }
 
             Spacer(modifier = Modifier.height(32.dp))
+        }
+    }
+}
+
+@Composable
+fun ChildContactItem(contact: Pair<String, String>, index: Int, showDivider: Boolean, onRemove: () -> Unit) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(contact.first, color = SettingsTextColor, fontWeight = FontWeight.Medium)
+                Text(contact.second, color = Color.Gray, fontSize = 13.sp)
+            }
+            IconButton(onClick = onRemove) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = "삭제",
+                    tint = Color.Red.copy(alpha = 0.7f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+        if (showDivider) {
+             Divider(color = Color.LightGray.copy(alpha = 0.3f), modifier = Modifier.padding(horizontal = 16.dp))
         }
     }
 }

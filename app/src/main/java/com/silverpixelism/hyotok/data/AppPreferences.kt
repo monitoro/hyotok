@@ -132,4 +132,27 @@ class AppPreferences(context: Context) {
         val json = packageNames.joinToString(",")
         prefs.edit().putString("home_apps", json).apply()
     }
+
+    // 즐겨찾기 6개 앱
+    fun getFavoriteApps(): List<String> {
+        val json = prefs.getString("favorite_apps", null)
+        return if (json != null) {
+            json.split(",").filter { it.isNotEmpty() }
+        } else {
+            // Default Favorite Apps (6 items)
+            listOf(
+                "##PHONE##",
+                "##MESSAGE##",
+                "##CONTACTS##",
+                "com.kakao.talk",
+                "com.google.android.youtube",
+                "##VOICE_AI##"
+            )
+        }
+    }
+
+    fun saveFavoriteApps(packageNames: List<String>) {
+        val json = packageNames.joinToString(",")
+        prefs.edit().putString("favorite_apps", json).apply()
+    }
 }

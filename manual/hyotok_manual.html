@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>효도폰 기능 안내서</title>
+    <!-- 폰트: Noto Sans KR -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5; /* Indigo 600 */
+            --primary-light: #818CF8;
+            --primary-dark: #3730A3;
+            --background: #F3F4F6;
+            --surface: #FFFFFF;
+            --text-dark: #111827;
+            --text-gray: #4B5563;
+            --border: #E5E7EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-dark);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 헤더 섹션 (그라데이션) */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 80px 20px 60px;
+            text-align: center;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: -50px; left: -50px;
+            width: 200px; height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            bottom: -80px; right: -20px;
+            width: 300px; height: 300px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: rgba(255,255,255,0.9);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 메인 컨테이너 */
+        .container {
+            max-width: 1100px;
+            margin: -30px auto 60px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 그리드 레이아웃 (카드형 디자인) */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        /* 카드 컴포넌트 */
+        .card {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+            border: 1px solid rgba(255,255,255,0.8);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 글래스모피즘 요소 추가 */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--primary-light), var(--primary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(79, 70, 229, 0.1);
+            border-color: rgba(79, 70, 229, 0.1);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            width: 64px;
+            height: 64px;
+            background-color: #EEF2FF;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 24px;
+            color: var(--primary);
+            box-shadow: inset 0 2px 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .card p {
+            font-size: 1rem;
+            color: var(--text-gray);
+            flex-grow: 1;
+        }
+
+        .card-tag {
+            display: inline-block;
+            background: #E0E7FF;
+            color: var(--primary-dark);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin-top: 20px;
+            align-self: flex-start;
+        }
+
+        /* 하이라이트 섹션 */
+        .highlight-section {
+            margin-top: 60px;
+            background: var(--surface);
+            border-radius: 24px;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-section::after {
+            content: '';
+            position:absolute;
+            right: 0;
+            bottom: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(79,70,229,0.05) 0%, rgba(255,255,255,0) 70%);
+            z-index: 0;
+        }
+
+        .highlight-text {
+            flex: 1;
+            z-index: 1;
+        }
+
+        .highlight-text h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .highlight-text p {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            margin-bottom: 24px;
+        }
+
+        .highlight-list {
+            list-style: none;
+        }
+
+        .highlight-list li {
+            position: relative;
+            padding-left: 28px;
+            margin-bottom: 12px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .highlight-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* 푸터 */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-top: 40px;
+        }
+        footer span {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* 반응형 (Mobile) */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 60px 20px 50px;
+                border-bottom-left-radius: 30px;
+                border-bottom-right-radius: 30px;
+            }
+            .hero h1 { font-size: 2.2rem; }
+            .hero p { font-size: 1rem; }
+            
+            .highlight-section {
+                flex-direction: column;
+                padding: 32px 24px;
+            }
+            .highlight-text h2 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 히어로(상단) 영역 -->
+    <header class="hero">
+        <h1>효도폰, 가족을 잇는 가장 확실한 방법</h1>
+        <p>기계가 서툰 부모님도, 멀리 사는 자녀도 안심!<br>스마트폰 화면 공유부터 배터리 체크까지, 필수만 담은 올인원 서비스입니다.</p>
+    </header>
+
+    <!-- 메인 컨테이너 -->
+    <div class="container">
+        <!-- 핵심 기능 카드 그리드 -->
+        <div class="features-grid">
+            
+            <!-- 1. 페어링 기능 -->
+            <div class="card">
+                <div class="card-icon">🤝</div>
+                <h2>1:1 간편 비밀 연결</h2>
+                <p>앱을 설치하고 부모님 폰에 뜬 <b>6자리 보안 코드</b>를 입력하기만 하면 즉시 자녀 폰과 1:1로 페어링됩니다. 복잡한 회원가입이나 인증 절차가 전혀 필요 없습니다.</p>
+                <span class="card-tag">#원터치_연결</span>
+            </div>
+
+            <!-- 2. 화면 공유 (주요 기능!) -->
+            <div class="card">
+                <div class="card-icon">📱</div>
+                <h2>실시간 화면 공유 및 원격 포인터</h2>
+                <p>"엄마, 그 설정 앱 들어가봐~" 말로만 설명하다 답답하셨나요? <b>부모님 폰 화면을 실시간으로 같이 보며</b> 해결하세요. 자녀가 화면을 터치하면 부모님 폰에 위치(빨간 점)가 표시되어 직관적인 안내가 가능합니다.</p>
+                <span class="card-tag">#답답함_제로</span>
+            </div>
+
+            <!-- 3. 전용 사진 전송 갤러리 -->
+            <div class="card">
+                <div class="card-icon">🖼️</div>
+                <h2>맞춤형 대형 사진 전송 (갤러리)</h2>
+                <p>카톡으로 사진 보내기를 어려워하시는 부모님을 위해 <b>글씨와 화면 구조가 큼직한 전용 갤러리</b>를 내장했습니다. 사진을 고르고 전송 버튼을 누르면 자녀에게 손쉽게 전달됩니다.</p>
+                <span class="card-tag">#추억_공유</span>
+            </div>
+
+            <!-- 4. 배터리/위치 상태 알림 -->
+            <div class="card">
+                <div class="card-icon">🔋</div>
+                <h2>부모님 기기 상태 원격 모니터링</h2>
+                <p>연결된 자녀의 폰(Guardian 앱)에서 부모님 전화기의 <b>배터리 잔량, 충전 여부, 그리고 최종 위치(GPS)</b>까지 실시간으로 파악할 수 있어, 연락이 안 될 때 안심할 수 있습니다.</p>
+                <span class="card-tag">#안심_모드</span>
+            </div>
+            
+            <!-- 5. 앱 구동 UI -->
+            <div class="card">
+                <div class="card-icon">👨‍👩‍👦</div>
+                <h2>효도폰 전용 런처 (홈 화면)</h2>
+                <p>부모님이 헷갈려하시는 수많은 앱들! 이제 부모님이 자주 쓰시는 가족 톡방, 사진 앱, 날씨 앱 등만 바탕화면에 <b>매우 큰 타일 형태로 고정</b>하여 편의성을 극대화합니다.</p>
+                <span class="card-tag">#효도_UI</span>
+            </div>
+
+            <!-- 6. 하드웨어/피드백 설정 -->
+            <div class="card">
+                <div class="card-icon">✨</div>
+                <h2>어르신 친화적 인터랙션</h2>
+                <p>버튼을 누를 때마다 확실하게 인지하실 수 있도록 <b>진동(햅틱) 피드백</b>을 지원하며, 폰 상단에는 자녀의 따뜻한 이름이 포함된 일상 인사를 띄울 수 있습니다.</p>
+                <span class="card-tag">#세심한_배려</span>
+            </div>
+        </div>
+
+        <!-- 강조 섹션 -->
+        <div class="highlight-section">
+            <div class="highlight-text">
+                <h2>왜 '효도폰' 앱인가요?</h2>
+                <p>스마트폰을 시니어(어르신)용 런처로 바꾸는 앱들은 많습니다. 하지만 <strong>자녀와의 소통과 지원(원격 제어/화면공유)</strong>에 초점을 맞춘 서비스는 흔치 않습니다.</p>
+                <ul class="highlight-list">
+                    <li>부모님 폰(효도폰)과 자녀 폰(Guardian)이 유기적으로 데이터를 주고받음</li>
+                    <li>복잡한 OS 권한 설정(접근성 등)을 설치 단계에서 간편화 지원</li>
+                    <li>모든 통신은 WebRTC 및 Firebase 기반으로 안전하게 암호화</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>우리 가족의 스마트한 연결고리, <span>효도폰 프로젝트</span></p>
+    </footer>
+
+</body>
+</html>

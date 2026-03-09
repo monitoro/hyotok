@@ -441,8 +441,7 @@ fun FavoriteItem(name: String, color: Color, icon: ImageVector, onClick: () -> U
 fun BasicAppsGrid(context: android.content.Context) {
     val prefs = remember { AppPreferences(context) }
     val hapticEnabled = prefs.isHapticEnabled()
-    val familyChatUrl = prefs.getFamilyChatUrl()
-    
+
     val performHaptic = {
         if (hapticEnabled) {
              val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
@@ -461,70 +460,77 @@ fun BasicAppsGrid(context: android.content.Context) {
         }
     }
 
-    val apps = mutableListOf<HomeGridItem>()
+    // AppPreferences에서 즐겨찾기 앱 목록 로드
+    val favoriteAppKeys = remember { prefs.getFavoriteApps() }
 
-    // 1. Phone
-    apps.add(HomeGridItem("전화", null, com.silverpixelism.hyotok.R.drawable.ic_app_phone, ColorPhone, Color.White, null) {
-        performHaptic()
-        context.startActivity(Intent(Intent.ACTION_DIAL))
-    })
-
-    // 2. Messages
-    apps.add(HomeGridItem("메세지", null, com.silverpixelism.hyotok.R.drawable.ic_app_message, ColorMessage, Color.White, null) {
-        performHaptic()
-        try {
-            val intent = Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_APP_MESSAGING) }
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("sms:")))
+    val apps = favoriteAppKeys.map { key ->
+        when (key) {
+            "##PHONE##" -> HomeGridItem("전화", null, com.silverpixelism.hyotok.R.drawable.ic_app_phone, ColorPhone, Color.White, null) {
+                performHaptic()
+                context.startActivity(Intent(Intent.ACTION_DIAL))
+            }
+            "##MESSAGE##" -> HomeGridItem("메세지", null, com.silverpixelism.hyotok.R.drawable.ic_app_message, ColorMessage, Color.White, null) {
+                performHaptic()
+                try {
+                    val intent = Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_APP_MESSAGING) }
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("sms:")))
+                }
+            }
+            "##CONTACTS##" -> HomeGridItem("연락처", null, com.silverpixelism.hyotok.R.drawable.ic_app_contacts, ColorFamily, Color.White, null) {
+                performHaptic()
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                        data = android.provider.ContactsContract.Contacts.CONTENT_URI
+                    }
+                    context.startActivity(intent)
+                } catch (e: Exception) {}
+            }
+            "##VOICE_AI##" -> HomeGridItem("음성AI", null, com.silverpixelism.hyotok.R.drawable.ic_app_ai, Color(0xFF6C5CE7), Color.White, null) {
+                performHaptic()
+                try {
+                    val intent = Intent(Intent.ACTION_VOICE_COMMAND)
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    android.widget.Toast.makeText(context, "음성 비서를 실행할 수 없습니다.", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+            "com.kakao.talk" -> HomeGridItem("카카오톡", null, com.silverpixelism.hyotok.R.drawable.ic_app_kakao, ColorKakao, Color.Black, key) {
+                performHaptic()
+                try {
+                    val intent = context.packageManager.getLaunchIntentForPackage(key)
+                    if (intent != null) context.startActivity(intent)
+                } catch (e: Exception) {}
+            }
+            "com.google.android.youtube" -> HomeGridItem("유튜브", null, com.silverpixelism.hyotok.R.drawable.ic_app_youtube, ColorYoutube, Color.White, key) {
+                performHaptic()
+                try {
+                    val intent = context.packageManager.getLaunchIntentForPackage(key)
+                    if (intent != null) context.startActivity(intent)
+                } catch (e: Exception) {}
+            }
+            else -> {
+                // 일반 설치된 앱 - PackageManager로 이름/아이콘 가져오기
+                try {
+                    val pm = context.packageManager
+                    val appInfo = pm.getApplicationInfo(key, 0)
+                    val appName = pm.getApplicationLabel(appInfo).toString()
+                    HomeGridItem(appName, null, null, Color(0xFF2D3436), Color.White, key) {
+                        performHaptic()
+                        try {
+                            val intent = pm.getLaunchIntentForPackage(key)
+                            if (intent != null) context.startActivity(intent)
+                        } catch (e: Exception) {}
+                    }
+                } catch (e: Exception) { null }
+            }
         }
-    })
+    }.filterNotNull()
 
-    // 3. Contacts (Was Family Phone) - Changed Title & Icon
-    apps.add(HomeGridItem("연락처", null, com.silverpixelism.hyotok.R.drawable.ic_app_contacts, ColorFamily, Color.White, null) {
-         performHaptic()
-         try {
-             val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = android.provider.ContactsContract.Contacts.CONTENT_URI
-                // putExtra("android.provider.extra.CONTENT_FILTER_TYPE", 1) // Removed filter to show all contacts
-             }
-             context.startActivity(intent)
-        } catch(e: Exception) {}
-    })
-    
-     // 4. KakaoTalk
-    apps.add(HomeGridItem("카카오톡", null, com.silverpixelism.hyotok.R.drawable.ic_app_kakao, ColorKakao, Color.Black, "com.kakao.talk") {
-        performHaptic()
-        try {
-            val intent = context.packageManager.getLaunchIntentForPackage("com.kakao.talk")
-            if (intent != null) context.startActivity(intent)
-        } catch(e: Exception) {}
-    })
-    
-    // 5. YouTube
-    apps.add(HomeGridItem("유튜브", null, com.silverpixelism.hyotok.R.drawable.ic_app_youtube, ColorYoutube, Color.White, "com.google.android.youtube") {
-        performHaptic()
-        try {
-            val intent = context.packageManager.getLaunchIntentForPackage("com.google.android.youtube")
-            if (intent != null) context.startActivity(intent)
-        } catch(e: Exception) {}
-    })
-    
-    // 6. Voice AI (Keep Vector Icon)
-    apps.add(HomeGridItem("음성AI", null, com.silverpixelism.hyotok.R.drawable.ic_app_ai, Color(0xFF6C5CE7), Color.White, null) {
-        performHaptic()
-        try {
-            // Try launching Google Assistant
-             val intent = Intent(Intent.ACTION_VOICE_COMMAND)
-             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-             context.startActivity(intent)
-        } catch(e: Exception) {
-             android.widget.Toast.makeText(context, "음성 비서를 실행할 수 없습니다.", android.widget.Toast.LENGTH_SHORT).show()
-        }
-    })
-    
     val rows = apps.chunked(3)
-    
+
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         for (rowApps in rows) {
             Row(

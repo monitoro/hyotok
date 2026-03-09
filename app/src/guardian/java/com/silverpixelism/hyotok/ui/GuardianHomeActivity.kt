@@ -385,15 +385,7 @@ fun GuardianHomeScreen() {
                 }
 
                 
-                // 3. AdMob Banner (Weight 0.1) - Bottom Area
-                androidx.compose.foundation.layout.Box(
-                    modifier = Modifier
-                        .weight(0.1f)
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.BottomCenter
-                ) {
-                    AdMobBanner()
-                }
+                // 3. AdMob Banner (Weight 0.1) - Bottom Area 제거됨
             }
         } else {
             // Full screen video - NO extra padding, NO labels
