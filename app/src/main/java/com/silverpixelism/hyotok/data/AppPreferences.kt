@@ -155,4 +155,13 @@ class AppPreferences(context: Context) {
         val json = packageNames.joinToString(",")
         prefs.edit().putString("favorite_apps", json).apply()
     }
+
+    // 홈화면 아이콘 글자 크기 (단위: sp, 기본값 14)
+    fun getIconFontSize(): Float {
+        return prefs.getFloat("icon_font_size", 14f)
+    }
+
+    fun saveIconFontSize(size: Float) {
+        prefs.edit().putFloat("icon_font_size", size).apply()
+    }
 }

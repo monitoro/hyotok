@@ -645,6 +645,10 @@ fun ExtendedAppsGrid(context: android.content.Context) {
 
 @Composable
 fun AppIconCard(item: HomeGridItem, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val prefs = remember { AppPreferences(context) }
+    val iconFontSize = prefs.getIconFontSize()
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -661,11 +665,10 @@ fun AppIconCard(item: HomeGridItem, modifier: Modifier = Modifier) {
         ) {
             // Priority: 1. Package Icon (Dynamic) -> 2. Custom Drawable -> 3. Vector Icon
             if (item.packageName != null) {
-                 val context = LocalContext.current
                  val pm = context.packageManager
-                 
+
                  var appIcon by remember(item.packageName) { mutableStateOf<android.graphics.drawable.Drawable?>(null) }
-                 
+
                  DisposableEffect(item.packageName) {
                      try {
                          appIcon = pm.getApplicationIcon(item.packageName)
@@ -712,12 +715,10 @@ fun AppIconCard(item: HomeGridItem, modifier: Modifier = Modifier) {
             }
         }
 
-
-
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = item.title,
-            fontSize = 14.sp,
+            fontSize = iconFontSize.sp,
             fontWeight = FontWeight.SemiBold,
             color = TextPrimary,
             maxLines = 1,

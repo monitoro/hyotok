@@ -36,6 +36,9 @@ import androidx.compose.material.icons.filled.TouchApp // Use basic filled icon
 import androidx.compose.material.icons.filled.BatteryChargingFull // Add Battery Icons
 import androidx.compose.material.icons.filled.BatteryStd
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Contacts
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.foundation.clickable // Add clickable import
 import com.silverpixelism.hyotok.webrtc.SignalingClient
 import com.silverpixelism.hyotok.webrtc.WebRTCClient
@@ -355,30 +358,37 @@ fun GuardianHomeScreen() {
                     ) {
                         item {
                             TutorialCard(
+                                icon = Icons.Default.Home,
+                                title = "1. 기본 홈 앱으로 설정 (필수)",
+                                description = "앱 설치 후 최초 실행 시, 또는 스마트폰 '설정 > 애플리케이션 > 기본 앱 선택'에서 '효도폰'을 기본 홈 앱으로 설정해야 항상 이 화면이 유지됩니다."
+                            )
+                        }
+                        item {
+                            TutorialCard(
+                                icon = Icons.Default.Contacts,
+                                title = "2. 연락처 및 전화 권한 허용",
+                                description = "홈 화면에서 가족에게 바로 전화를 걸기 위해, 최초 권한 요청 시 '연락처 접근' 및 '전화 걸기' 권한을 반드시 허용해주세요."
+                            )
+                        }
+                        item {
+                            TutorialCard(
+                                icon = Icons.Default.PhotoCamera,
+                                title = "3. 사진보내기 및 파일 권한",
+                                description = "홈 화면 '사진보내기' 버튼으로 부모님이 최근에 찍은 사진을 가족에게 쉽게 보낼 수 있습니다. 이를 위해 최초 실행 시 '사진 및 동영상(또는 파일)' 시스템 접근 권한을 허용해주세요."
+                            )
+                        }
+                        item {
+                            TutorialCard(
                                 icon = Icons.Default.Settings,
-                                title = "1. 화면 및 소리 설정",
-                                description = "설정 메뉴 > 화면 및 소리에서 글자 크기와 화면 밝기를 부모님이 보시기 편하게 조절해주세요. 벨소리 크기도 최대로 설정하는 것이 좋습니다."
-                            )
-                        }
-                        item {
-                            TutorialCard(
-                                icon = Icons.Default.Apps,
-                                title = "2. 홈 화면 앱 추가",
-                                description = "설정 메뉴 > 홈 화면 구성에서 부모님이 자주 쓰시는 앱(유튜브, 카카오톡 등)을 선택하면 홈 화면 하단에 추가됩니다."
-                            )
-                        }
-                        item {
-                            TutorialCard(
-                                icon = Icons.Default.People,
-                                title = "3. 가족 연결 설정",
-                                description = "설정 메뉴 > 가족 연결에서 '가족 단톡방 링크'와 '자녀 연락처'를 등록하면 홈 화면에서 유기적으로 연결할 수 있습니다."
+                                title = "4. 부모님 맞춤 환경 설정",
+                                description = "부모폰 설정 메뉴(우측 상단 톱니바퀴)에서 앱 아이콘 글자 크기 조절, 하단 자주 쓰는 앱 추가, 상단 6개 즐겨찾기 메뉴 변경 등을 부모님께 맞춰 설정해 드릴 수 있습니다."
                             )
                         }
                         item {
                             TutorialCard(
                                 icon = Icons.Default.TouchApp,
-                                title = "4. 도움받기 기능",
-                                description = "부모님이 홈 화면의 '도움받기' 버튼을 누르면 자녀에게 연결 요청이 옵니다. 화면을 보면서 원격으로 도와드릴 수 있습니다."
+                                title = "5. 도움받기(원격지원) 기능",
+                                description = "부모님이 홈 화면의 '도움받기' 버튼을 누르면 자녀에게 연결 요청이 옵니다. 스마트폰 화면을 함께 보면서 원격으로 도와드릴 수 있습니다."
                             )
                         }
                     }

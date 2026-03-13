@@ -75,6 +75,9 @@ fun SettingsScreen(onBack: () -> Unit) {
     var showFavoriteAppsDialog by remember { mutableStateOf(false) }
     var favoriteApps by remember { mutableStateOf(prefs.getFavoriteApps()) }
 
+    // 홈화면 아이콘 글자 크기
+    var iconFontSize by remember { mutableStateOf(prefs.getIconFontSize()) }
+
     LaunchedEffect(showAppSelectionDialog, showFavoriteAppsDialog) {
         if ((showAppSelectionDialog || showFavoriteAppsDialog) && installedApps.isEmpty()) {
             installedApps = withContext(Dispatchers.IO) {
@@ -618,72 +621,48 @@ fun SettingsScreen(onBack: () -> Unit) {
                     onClick = { showAppSelectionDialog = true }
                 )
                 Divider(color = Color.LightGray.copy(alpha = 0.3f))
-                 SettingInputItem(
+                SettingInputItem(
                     title = "가족 단톡방 링크",
                     value = familyChatUrl,
-                    onValueChange = { 
+                    onValueChange = {
                         familyChatUrl = it
                         prefs.saveFamilyChatUrl(it)
                     },
                     placeholder = "카카오톡 오픈채팅방 링크 입력"
                 )
-            }
-
-            // 3. 가족 연결
-            SettingsCard(title = "👨‍👩‍👧‍👦 가족 연결") {
-                SettingInputItem(
-                    title = "긴급 연락처 (119 또는 보호자)",
-                    value = emergencyContact,
-                    onValueChange = { 
-                        emergencyContact = it
-                        prefs.saveEmergencyContact(it)
-                    },
-                    placeholder = "010-1234-5678"
-                )
-                
                 Divider(color = Color.LightGray.copy(alpha = 0.3f))
-                
-                Text(
-                    text = "자녀 연락처 목록",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    color = SettingsTextColor,
-                    modifier = Modifier.padding(16.dp)
-                )
-                
-                if (childContacts.isEmpty()) {
-                    Text(
-                        "등록된 자녀가 없습니다",
-                        color = Color.Gray,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        fontSize = 14.sp
-                    )
-                } else {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        for ((index, contact) in childContacts.withIndex()) {
-                            ChildContactItem(
-                                contact = contact,
-                                index = index,
-                                showDivider = index < childContacts.size - 1,
-                                onRemove = {
-                                    val updated = childContacts.toMutableList().apply { removeAt(index) }
-                                    childContacts = updated
-                                    prefs.saveChildContacts(updated)
-                                }
-                            )
+                // 홈화면 아이콘 글자 크기 슬라이더
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text("아이콘 글자 크기", fontWeight = FontWeight.Medium, color = SettingsTextColor, fontSize = 16.sp)
+                            Text("현재: ${iconFontSize.toInt()}sp", color = Color.Gray, fontSize = 13.sp)
                         }
                     }
-                }
-                
-                Button(
-                    onClick = { showAddContactDialog = true },
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = SettingsPrimaryColor),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = null, tint = Color.White)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("자녀 연락처 추가", color = Color.White)
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("12", fontSize = 12.sp, color = Color.Gray)
+                        androidx.compose.material3.Slider(
+                            value = iconFontSize,
+                            onValueChange = { 
+                                val newSize = kotlin.math.round(it)
+                                iconFontSize = newSize
+                            },
+                            onValueChangeFinished = {
+                                prefs.saveIconFontSize(iconFontSize)
+                            },
+                            valueRange = 12f..22f,
+                            steps = 9,
+                            modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+                        )
+                        Text("22", fontSize = 12.sp, color = Color.Gray)
+                    }
                 }
             }
 
