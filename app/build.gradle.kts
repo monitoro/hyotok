@@ -31,16 +31,16 @@ android {
             // Default applicationId
             resValue("string", "app_name", "효도폰")
             // Parent App Version
-            versionCode = 11
-            versionName = "1.0.10"
+            versionCode = 14
+            versionName = "1.0.13"
         }
         create("guardian") {
             dimension = "mode"
             applicationIdSuffix = ".guardian"
             resValue("string", "app_name", "효도폰(지원)")
             // Guardian App Version
-            versionCode = 11
-            versionName = "1.0.10"
+            versionCode = 14
+            versionName = "1.0.13"
         }
     }
 
@@ -91,6 +91,9 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+        jniLibs {
+            useLegacyPackaging = false
         }
     }
 }
